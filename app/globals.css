@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  /* Escuro de estúdio: o preto do vídeo é o fundo do site. */
+  --color-carvao: #0a0a0b;
+  --color-carvao-claro: #141416;
+  --color-fumaca: #8a8a90;
+  --color-creme: #f2ede4;
+  --color-brasa: #e8873a;
+
+  --font-titulo: var(--fonte-serifa), Georgia, serif;
+  --font-corpo: var(--fonte-sans), system-ui, sans-serif;
+}
+
+html {
+  background-color: var(--color-carvao);
+}
+
+body {
+  background-color: var(--color-carvao);
+  color: var(--color-creme);
+  font-family: var(--font-corpo);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background-color: var(--color-brasa);
+  color: var(--color-carvao);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brasa);
+  outline-offset: 3px;
+}
+
+/* Títulos grandes pedem letter-spacing negativo para não parecerem soltos. */
+.titulo-vitrine {
+  font-family: var(--font-titulo);
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+}
+
+/* A linha de anotação se desenha da âncora para fora. */
+@keyframes desenhar-linha {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -50,6 +50,24 @@ body {
   }
 }
 
+/* A seta desce, some por baixo e volta do topo — nunca "pula" de volta. */
+@keyframes seta-desce {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

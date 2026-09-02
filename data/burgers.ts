@@ -30,7 +30,7 @@ export type Destaque = {
  * mudam junto.
  *
  * Os valores de `y` foram medidos sobre o primeiro frame de
- * `public/hero/hero-1080.mp4`. Trocar o vídeo exige remedi-los.
+ * `public/hero/hero-1440.mp4`. Trocar o vídeo exige remedi-los.
  */
 export const CAMADAS: Ingrediente[] = [
   { nome: "Pão com gergelim", y: 15, lado: "direita" },

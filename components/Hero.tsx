@@ -37,12 +37,16 @@ export default function Hero() {
 
   // A escolha do arquivo é feita aqui, e não com <source media="...">: navegadores
   // ignoram o atributo `media` dentro de <video>, e o resultado era o celular
-  // baixando a versão 1080p.
+  // baixando a versão grande.
+  //
+  // São só duas versões porque uma intermediária de 1080p acabou ficando MAIOR
+  // que a de 1440p — o material tratado comprime tão bem que subir a resolução
+  // saiu de graça. O celular continua na de 720p, que é menos da metade do peso.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
-    video.src = grande ? "/hero/hero-1080.mp4" : "/hero/hero-720.mp4";
+    video.src = grande ? "/hero/hero-1440.mp4" : "/hero/hero-720.mp4";
     video.load();
   }, []);
 

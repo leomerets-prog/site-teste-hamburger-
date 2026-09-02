@@ -12,6 +12,9 @@ const FIM_DAS_LEGENDAS = 0.42;
 /** Proporção do vídeo do hero. */
 const PROPORCAO = 16 / 9;
 
+/** Metade de um quadro a 24 fps: abaixo disso, buscar de novo não muda a tela. */
+const MEIO_QUADRO = 1 / 48;
+
 type Caixa = {
   x: number;
   y: number;
@@ -39,14 +42,15 @@ export default function Hero() {
   // ignoram o atributo `media` dentro de <video>, e o resultado era o celular
   // baixando a versão grande.
   //
-  // São só duas versões porque uma intermediária de 1080p acabou ficando MAIOR
-  // que a de 1440p — o material tratado comprime tão bem que subir a resolução
-  // saiu de graça. O celular continua na de 720p, que é menos da metade do peso.
+  // Ficou em 1080p, e não em 1440p: buscar um instante num quadro maior custa
+  // decodificação proporcional ao número de pixels, e o scroll é a coisa que o
+  // visitante mais sente. A textura que se via em 1440p era da própria fonte,
+  // então a resolução extra pesava sem entregar nitidez de verdade.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
-    video.src = grande ? "/hero/hero-1440.mp4" : "/hero/hero-720.mp4";
+    video.src = grande ? "/hero/hero-1080.mp4" : "/hero/hero-720.mp4";
     video.load();
   }, []);
 
@@ -115,7 +119,16 @@ export default function Hero() {
       const duracao = video.duration;
       if (Number.isFinite(duracao) && duracao > 0) {
         const tempo = atual * duracao;
-        if (Math.abs(video.currentTime - tempo) > 0.01) {
+        // Dois freios, e os dois importam para o scroll não engasgar:
+        //
+        // `video.seeking` evita empilhar pedidos — enquanto o navegador ainda
+        // está buscando um instante, pedir outro só joga trabalho fora.
+        //
+        // MEIO_QUADRO evita pedir um instante que daria exatamente a mesma
+        // imagem. Antes o limite era 0,01s, quase quatro pedidos por quadro
+        // exibido: três deles não mudavam nada na tela e ainda assim custavam
+        // uma decodificação cada.
+        if (!video.seeking && Math.abs(video.currentTime - tempo) > MEIO_QUADRO) {
           video.currentTime = tempo;
         }
       }

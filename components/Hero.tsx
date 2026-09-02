@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CAMADAS, DESTAQUE, PILHA } from "@/data/burgers";
+import { CAMADAS, CASA, DESTAQUE, PILHA } from "@/data/burgers";
 
 /** Altura de rolagem do hero. Quanto maior, mais devagar a montagem acontece. */
 const TELAS_DE_SCROLL = 6;
@@ -265,10 +265,22 @@ export default function Hero() {
           pilha — sobreposto ao hambúrguer ele lia como se estivesse na frente.
         */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-carvao)] via-[var(--color-carvao)]/85 to-transparent pt-28 pb-8">
-          <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6">
-            <h1 className="titulo-vitrine text-[clamp(1.75rem,3.5vw,3rem)]">
-              {DESTAQUE}
-            </h1>
+          <div className="mx-auto flex max-w-6xl items-end justify-between gap-6 px-6">
+            <div>
+              {/*
+                A manchete vem antes do nome do lanche porque é ela que segura
+                quem chegou: diz em uma linha o que essa casa tem de próprio.
+                O nome do lanche entra como legenda do que está na tela.
+              */}
+              {/* text-balance reparte as duas linhas com pesos parecidos, em vez
+                  de deixar "o seu." sozinho embaixo. */}
+              <h1 className="titulo-vitrine max-w-2xl text-balance text-[clamp(1.5rem,3vw,2.5rem)] leading-tight">
+                {CASA.manchete}
+              </h1>
+              <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-[var(--color-fumaca)]">
+                Na tela: {DESTAQUE}
+              </p>
+            </div>
 
             {/*
               Convite a rolar: a mesma serifa do site. Fica aqui dentro do

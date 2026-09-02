@@ -101,7 +101,7 @@ function RestoDoCardapio() {
     <div className="border-t border-[var(--color-carvao-claro)] px-6 py-20 md:py-28">
       <div className="mx-auto max-w-6xl">
         <h2 className="titulo-vitrine text-[clamp(1.75rem,3.2vw,2.75rem)]">
-          O resto do cardápio
+          E ainda tem treze
         </h2>
 
         <ul className="mt-10 grid gap-x-16 gap-y-0 md:grid-cols-2">
@@ -121,8 +121,8 @@ function RestoDoCardapio() {
         </ul>
 
         <p className="mt-10 text-sm text-[var(--color-fumaca)]">
-          Todos vão no pão da casa. Tem também hot dogs, porções, milkshakes e
-          drinks no balcão.
+          Fora os hot dogs, as porções, os milkshakes e os drinks. O cardápio
+          inteiro fica no balcão.
         </p>
       </div>
     </div>

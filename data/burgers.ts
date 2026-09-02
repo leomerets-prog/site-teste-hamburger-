@@ -54,7 +54,21 @@ export const CASA = {
   marca: { antes: "ME ", destaque: "POUPA", depois: "" },
   nomeCompleto: "Me Poupa",
   cidade: "Poços de Caldas, MG",
-  assinatura: "Rua Santa Catarina, 271 — de segunda a sábado, a partir das 18h.",
+  endereco: "Rua Santa Catarina, 271",
+  horario: "De segunda a sábado, a partir das 18h",
+
+  /**
+   * A manchete sai do que a casa tem de mais próprio: o cardápio é numerado,
+   * de 1 a 14. Nenhum concorrente poderia usar essa frase — que é justamente o
+   * teste de uma boa manchete.
+   */
+  manchete: "Aqui o lanche tem número. Todo mundo tem o seu.",
+
+  /**
+   * PRECISA DE CONFIRMAÇÃO: a casa se apresenta assim na bio do Instagram, mas
+   * não diz qual premiação nem em que anos. Vale perguntar antes de mostrar.
+   */
+  selo: "Quatro vezes a melhor hamburgueria da cidade",
 };
 
 /** Lanche que abre o site, no vídeo do hero. */
@@ -75,7 +89,7 @@ export const DESTAQUES: Destaque[] = [
     numero: "07",
     nome: "Burguer 7",
     chamada:
-      "Os anéis de cebola vêm empanados dentro do lanche, não na porção do lado.",
+      "Anel de cebola empanado vai dentro do lanche. Aqui não é acompanhamento, é camada.",
     ingredientes: [
       "Burguer",
       "Bacon",
@@ -90,7 +104,7 @@ export const DESTAQUES: Destaque[] = [
     numero: "14",
     nome: "Burguer 14",
     chamada:
-      "Cem gramas de queijo canastra empanado no Doritos. É o do mês — enquanto durar o mês.",
+      "Cem gramas de queijo canastra empanado no Doritos. Sim, no Doritos. É o do mês — some quando o mês acabar.",
     ingredientes: [
       "2 burguers smash",
       "100g queijo canastra empanado no Doritos",
@@ -105,7 +119,7 @@ export const DESTAQUES: Destaque[] = [
     preco: "99,99",
     nome: "O Rodízio",
     chamada:
-      "Todo dia, não só no fim de semana. Criança até 5 anos não paga, de 6 a 11 paga meia.",
+      "Era só no fim de semana. Agora é todo dia. Criança até 5 anos não paga, de 6 a 11 paga meia.",
     ingredientes: ["Rodízio de burguers", "Todos os dias", "Reserva pelo Direct"],
     foto: "/cardapio/rodizio",
     alt: "Vários mini burguers com cheddar servidos no prato do rodízio",

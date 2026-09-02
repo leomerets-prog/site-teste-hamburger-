@@ -12,7 +12,7 @@ export default function CamadasMobile() {
       className="border-t border-[var(--color-carvao-claro)] px-6 py-16 md:hidden"
     >
       <h2 className="titulo-vitrine mb-8 text-sm tracking-[0.3em] text-[var(--color-fumaca)]">
-        DE CIMA PARA BAIXO
+        O QUE VAI DENTRO
       </h2>
       <ol className="space-y-0">
         {CAMADAS.map((camada, i) => (

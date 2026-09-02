@@ -16,9 +16,13 @@ const sans = Inter({
   display: "swap",
 });
 
+// O title é o que aparece na aba e no Google; a description é o que aparece
+// embaixo dele e na prévia do link no WhatsApp — por isso ela é uma frase de
+// verdade, e não palavra-chave empilhada.
 export const metadata: Metadata = {
-  title: `${CASA.nomeCompleto} — Hambúrgueres | ${CASA.cidade}`,
-  description: CASA.assinatura,
+  title: `${CASA.nomeCompleto} — Hamburgueria em ${CASA.cidade}`,
+  description:
+    "Catorze burguers numerados, o do Palhaço e rodízio todo dia por R$ 99,99. Rua Santa Catarina, 271, Poços de Caldas.",
 };
 
 export default function RootLayout({

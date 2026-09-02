@@ -8,102 +8,117 @@ export type Ingrediente = {
 
 export type Burger = {
   slug: string;
+  /** Numeral do cardápio, quando o lanche tem um. É ele que vira a tipografia gigante. */
+  numero?: string;
   nome: string;
   chamada: string;
   ingredientes: string[];
 };
 
 /**
- * Ancoragem das legendas do hero. Os valores de `y` foram medidos sobre o
- * primeiro frame de `public/hero/hero-1080.mp4` — se o vídeo for trocado,
- * remeça antes de mexer nesses números.
+ * Ancoragem das legendas do hero.
+ *
+ * ATENÇÃO: estes rótulos descrevem o que aparece no VÍDEO, que hoje é um lanche
+ * genérico de demonstração — não o Burguer do Palhaço de verdade. As diferenças
+ * são o tomate (que o Palhaço não leva) e a quantidade de carne (o Palhaço leva
+ * dois smash, o vídeo mostra um). Quando o vídeo real for gravado, estes rótulos
+ * mudam junto.
+ *
+ * Os valores de `y` foram medidos sobre o primeiro frame de
+ * `public/hero/hero-1080.mp4`. Trocar o vídeo exige remedi-los.
  */
 export const CAMADAS: Ingrediente[] = [
-  { nome: "Pão brioche", y: 15, lado: "direita" },
-  { nome: "Alface americana", y: 30, lado: "esquerda" },
-  { nome: "Tomate em rodela", y: 41, lado: "direita" },
-  { nome: "Cheddar derretido", y: 49, lado: "esquerda" },
-  { nome: "Blend 180g", y: 58, lado: "direita" },
-  { nome: "Cebola roxa", y: 68, lado: "esquerda" },
+  { nome: "Pão com gergelim", y: 15, lado: "direita" },
+  { nome: "Alface", y: 30, lado: "esquerda" },
+  { nome: "Tomate", y: 41, lado: "direita" },
+  { nome: "Cheddar", y: 49, lado: "esquerda" },
+  { nome: "Smash na chapa", y: 58, lado: "direita" },
+  { nome: "Cebola", y: 68, lado: "esquerda" },
   { nome: "Picles", y: 76, lado: "direita" },
-  { nome: "Pão base tostado", y: 85, lado: "esquerda" },
+  { nome: "Pão base", y: 85, lado: "esquerda" },
 ];
 
 /** Bordas horizontais da pilha no frame inicial, em % da largura. */
 export const PILHA = { esquerda: 37, direita: 64 };
 
 /**
- * Dados da casa. Para apresentar o site a outro estabelecimento, este bloco e
- * a lista BURGERS abaixo são as únicas coisas que precisam mudar — o resto do
- * site lê tudo daqui.
+ * Dados da casa. Para apresentar o site a outro estabelecimento, este bloco e a
+ * lista BURGERS são as únicas coisas que precisam mudar.
  *
- * A marca é quebrada em três pedaços porque a letra do meio sai na cor de
- * brasa: é o único ponto de cor do logo.
+ * A marca sai em dois tons: "ME" em creme e "POUPA" em brasa — é o tratamento
+ * que a própria casa usa nas peças do Instagram.
  */
 export const CASA = {
-  marca: { antes: "SALAD", destaque: "Ã", depois: "O" },
-  nomeCompleto: "Saladão",
+  marca: { antes: "ME ", destaque: "POUPA", depois: "" },
+  nomeCompleto: "Me Poupa",
   cidade: "Poços de Caldas, MG",
-  assinatura: "Pão macio, carne grossa, queijo que escorre. A gente monta na hora.",
+  assinatura: "Rodízio todo dia por R$ 99,99. Criança até 5 anos não paga.",
 };
 
-export const DESTAQUE = "X-SALADA";
+/** Lanche que abre o site, no vídeo do hero. */
+export const DESTAQUE = "Burguer do Palhaço";
 
+/**
+ * Quatro dos dezoito itens do cardápio, escolhidos para a vitrine: o assinado
+ * da casa, o do mês, e dois que a própria casa fotografa mais no Instagram.
+ * O cardápio completo continua no balcão e no delivery.
+ */
 export const BURGERS: Burger[] = [
   {
-    slug: "x-salada",
-    nome: "X-Salada",
-    chamada: "O de sempre. Só que a alface entra crocante e o queijo escorre.",
+    slug: "burguer-do-palhaco",
+    nome: "Burguer do Palhaço",
+    chamada:
+      "Dois smash prensados na chapa, molho especial e picles pra cortar a gordura. No pão de gergelim.",
     ingredientes: [
-      "Pão brioche",
-      "Alface americana",
-      "Tomate",
-      "Cheddar",
-      "Blend 180g",
-      "Cebola roxa",
-      "Picles",
-    ],
-  },
-  {
-    slug: "x-bacon",
-    nome: "X-Bacon",
-    chamada: "Bacon frito na hora, na chapa, até quebrar quando você morde.",
-    ingredientes: [
-      "Pão brioche",
-      "Bacon em tiras",
-      "Cheddar",
-      "Blend 180g",
-      "Cebola caramelizada",
-      "Maionese da casa",
-    ],
-  },
-  {
-    slug: "x-egg",
-    nome: "X-Egg",
-    chamada: "Ovo com a gema mole. Se sujar a mão, era pra ser assim.",
-    ingredientes: [
-      "Pão brioche",
-      "Ovo frito",
-      "Cheddar",
-      "Blend 180g",
+      "2 burguers smash",
       "Alface",
-      "Tomate",
+      "Queijo cheddar",
+      "Molho especial",
+      "Cebola",
+      "Picles",
+      "Pão com gergelim",
     ],
   },
   {
-    slug: "x-tudo",
-    nome: "X-Tudo",
-    chamada: "Tudo mesmo. Não pergunta, só segura com as duas mãos.",
+    slug: "burguer-14",
+    numero: "14",
+    nome: "Burguer 14",
+    chamada:
+      "Cem gramas de queijo canastra empanado no Doritos. É o do mês — enquanto durar o mês.",
     ingredientes: [
-      "Pão brioche",
-      "Bacon em tiras",
-      "Ovo frito",
-      "Cheddar",
-      "Dois blends 180g",
-      "Alface",
-      "Tomate",
-      "Cebola roxa",
-      "Picles",
+      "2 burguers smash",
+      "100g queijo canastra empanado no Doritos",
+      "Tomate grelhado",
+      "Manjericão",
+      "Pão",
+    ],
+  },
+  {
+    slug: "burguer-7",
+    numero: "07",
+    nome: "Burguer 7",
+    chamada:
+      "Anéis de cebola empanados dentro do lanche, não na porção do lado.",
+    ingredientes: [
+      "Burguer",
+      "Bacon",
+      "Anéis de cebola empanados",
+      "Cheddar fatiado",
+      "Pão",
+    ],
+  },
+  {
+    slug: "burguer-11",
+    numero: "11",
+    nome: "Burguer 11",
+    chamada:
+      "Brie e bacon caramelizado no mesmo lanche. Doce e salgado, e funciona.",
+    ingredientes: [
+      "Burguer",
+      "Tomate grelhado",
+      "Bacon caramelizado",
+      "Queijo brie",
+      "Pão",
     ],
   },
 ];

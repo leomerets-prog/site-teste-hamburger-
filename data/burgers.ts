@@ -32,6 +32,21 @@ export const CAMADAS: Ingrediente[] = [
 /** Bordas horizontais da pilha no frame inicial, em % da largura. */
 export const PILHA = { esquerda: 37, direita: 64 };
 
+/**
+ * Dados da casa. Para apresentar o site a outro estabelecimento, este bloco e
+ * a lista BURGERS abaixo são as únicas coisas que precisam mudar — o resto do
+ * site lê tudo daqui.
+ *
+ * A marca é quebrada em três pedaços porque a letra do meio sai na cor de
+ * brasa: é o único ponto de cor do logo.
+ */
+export const CASA = {
+  marca: { antes: "SALAD", destaque: "Ã", depois: "O" },
+  nomeCompleto: "Saladão",
+  cidade: "Poços de Caldas, MG",
+  assinatura: "Pão macio, carne grossa, queijo que escorre. A gente monta na hora.",
+};
+
 export const DESTAQUE = "X-SALADA";
 
 export const BURGERS: Burger[] = [

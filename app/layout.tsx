@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Serif, Inter } from "next/font/google";
+import { CASA } from "@/data/burgers";
 import "./globals.css";
 
 const serifa = Instrument_Serif({
@@ -16,9 +17,8 @@ const sans = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Saladão — Hambúrgueres",
-  description:
-    "Quatro hambúrgueres. Pão brioche, carne grossa, queijo que escorre.",
+  title: `${CASA.nomeCompleto} — Hambúrgueres | ${CASA.cidade}`,
+  description: CASA.assinatura,
 };
 
 export default function RootLayout({

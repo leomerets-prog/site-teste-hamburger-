@@ -6,13 +6,18 @@ export type Ingrediente = {
   lado: "esquerda" | "direita";
 };
 
-export type Burger = {
+export type Destaque = {
   slug: string;
-  /** Numeral do cardápio, quando o lanche tem um. É ele que vira a tipografia gigante. */
+  /** Numeral do cardápio, quando o lanche tem um. */
   numero?: string;
+  /** Valor em destaque, para itens que são oferta e não lanche. */
+  preco?: string;
   nome: string;
   chamada: string;
   ingredientes: string[];
+  foto: string;
+  /** Texto alternativo da foto. */
+  alt: string;
 };
 
 /**
@@ -42,9 +47,6 @@ export const CAMADAS: Ingrediente[] = [
 export const PILHA = { esquerda: 37, direita: 64 };
 
 /**
- * Dados da casa. Para apresentar o site a outro estabelecimento, este bloco e a
- * lista BURGERS são as únicas coisas que precisam mudar.
- *
  * A marca sai em dois tons: "ME" em creme e "POUPA" em brasa — é o tratamento
  * que a própria casa usa nas peças do Instagram.
  */
@@ -52,32 +54,36 @@ export const CASA = {
   marca: { antes: "ME ", destaque: "POUPA", depois: "" },
   nomeCompleto: "Me Poupa",
   cidade: "Poços de Caldas, MG",
-  assinatura: "Rodízio todo dia por R$ 99,99. Criança até 5 anos não paga.",
+  assinatura: "Rua Santa Catarina, 271 — de segunda a sábado, a partir das 18h.",
 };
 
 /** Lanche que abre o site, no vídeo do hero. */
 export const DESTAQUE = "Burguer do Palhaço";
 
 /**
- * Quatro dos dezoito itens do cardápio, escolhidos para a vitrine: o assinado
- * da casa, o do mês, e dois que a própria casa fotografa mais no Instagram.
- * O cardápio completo continua no balcão e no delivery.
+ * Blocos grandes do cardápio. São só três porque só existem três fotos reais
+ * da casa — inventar imagem para os outros quinze itens seria pior que
+ * apresentá-los em lista. Quando a casa mandar mais fotos, cada item promovido
+ * para cá é uma entrada nova nesta lista.
+ *
+ * PRECISA DE CONFIRMAÇÃO: a foto de `burguer-14.jpg` foi associada ao Burguer 14
+ * pelo empanado visível, mas isso é leitura da imagem, não informação da casa.
  */
-export const BURGERS: Burger[] = [
+export const DESTAQUES: Destaque[] = [
   {
-    slug: "burguer-do-palhaco",
-    nome: "Burguer do Palhaço",
+    slug: "burguer-7",
+    numero: "07",
+    nome: "Burguer 7",
     chamada:
-      "Dois smash prensados na chapa, molho especial e picles pra cortar a gordura. No pão de gergelim.",
+      "Os anéis de cebola vêm empanados dentro do lanche, não na porção do lado.",
     ingredientes: [
-      "2 burguers smash",
-      "Alface",
-      "Queijo cheddar",
-      "Molho especial",
-      "Cebola",
-      "Picles",
-      "Pão com gergelim",
+      "Burguer",
+      "Bacon",
+      "Anéis de cebola empanados",
+      "Cheddar fatiado",
     ],
+    foto: "/cardapio/burguer-7",
+    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon",
   },
   {
     slug: "burguer-14",
@@ -90,35 +96,62 @@ export const BURGERS: Burger[] = [
       "100g queijo canastra empanado no Doritos",
       "Tomate grelhado",
       "Manjericão",
-      "Pão",
     ],
+    foto: "/cardapio/burguer-14",
+    alt: "Burguer 14 com queijo empanado, carne e bacon no pão de gergelim",
   },
   {
-    slug: "burguer-7",
-    numero: "07",
-    nome: "Burguer 7",
+    slug: "rodizio",
+    preco: "99,99",
+    nome: "O Rodízio",
     chamada:
-      "Anéis de cebola empanados dentro do lanche, não na porção do lado.",
-    ingredientes: [
-      "Burguer",
-      "Bacon",
-      "Anéis de cebola empanados",
-      "Cheddar fatiado",
-      "Pão",
-    ],
+      "Todo dia, não só no fim de semana. Criança até 5 anos não paga, de 6 a 11 paga meia.",
+    ingredientes: ["Rodízio de burguers", "Todos os dias", "Reserva pelo Direct"],
+    foto: "/cardapio/rodizio",
+    alt: "Vários mini burguers com cheddar servidos no prato do rodízio",
+  },
+];
+
+/**
+ * O resto do cardápio, em lista. Sem foto e sem invenção — o cliente vê a
+ * extensão do menu, e a casa decide depois quais itens merecem foto.
+ */
+export const RESTO: { nome: string; ingredientes: string }[] = [
+  { nome: "Burguer 1", ingredientes: "Picles e cheddar fatiado" },
+  { nome: "Burguer 2", ingredientes: "Bacon, alface e requeijão cremoso" },
+  { nome: "Burguer 3", ingredientes: "Bacon, alface e creme de gorgonzola" },
+  {
+    nome: "Burguer 4",
+    ingredientes: "Bacon, cebola roxa, molho BBQ e queijo prato",
+  },
+  { nome: "Burguer 5", ingredientes: "Bacon, alface, tomate e queijo prato" },
+  {
+    nome: "Burguer 6",
+    ingredientes: "Pepperoni, rúcula, tomate e requeijão cremoso",
   },
   {
-    slug: "burguer-11",
-    numero: "11",
+    nome: "Burguer 8",
+    ingredientes: "Bacon, molho de mostarda dijon e cheddar fatiado",
+  },
+  {
+    nome: "Burguer 9",
+    ingredientes: "Cebola caramelizada, bacon e queijo prato",
+  },
+  { nome: "Burguer 10", ingredientes: "2 ovos, cheddar fatiado e bacon" },
+  {
     nome: "Burguer 11",
-    chamada:
-      "Brie e bacon caramelizado no mesmo lanche. Doce e salgado, e funciona.",
-    ingredientes: [
-      "Burguer",
-      "Tomate grelhado",
-      "Bacon caramelizado",
-      "Queijo brie",
-      "Pão",
-    ],
+    ingredientes: "Tomate grelhado, bacon caramelizado e queijo brie",
+  },
+  {
+    nome: "Burguer 12",
+    ingredientes: "Alface, pepperoni, molho caesar e queijo minas",
+  },
+  {
+    nome: "Burguer 13",
+    ingredientes: "Burguer de linguiça, vinagrete de picles e queijo minas",
+  },
+  {
+    nome: "Kids",
+    ingredientes: "Cheddar fatiado, alface e tomate em tamanho menor, com fritas",
   },
 ];

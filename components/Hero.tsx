@@ -6,6 +6,9 @@ import { CAMADAS, CASA, DESTAQUE, PILHA } from "@/data/burgers";
 /** Altura de rolagem do hero. Quanto maior, mais devagar a montagem acontece. */
 const TELAS_DE_SCROLL = 6;
 
+/** No celular o trilho encurta: decodificar custa mais e a paciência é menor. */
+const TELAS_NO_CELULAR = 4;
+
 /** Ponto do scrub em que as legendas já saíram de cena. */
 const FIM_DAS_LEGENDAS = 0.42;
 
@@ -37,6 +40,7 @@ export default function Hero() {
   const [progresso, setProgresso] = useState(0);
   const [pronto, setPronto] = useState(false);
   const [caixa, setCaixa] = useState<Caixa | null>(null);
+  const [telas, setTelas] = useState(TELAS_DE_SCROLL);
 
   // A escolha do arquivo é feita aqui, e não com <source media="...">: navegadores
   // ignoram o atributo `media` dentro de <video>, e o resultado era o celular
@@ -50,8 +54,31 @@ export default function Hero() {
     const video = videoRef.current;
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
+
     video.src = grande ? "/hero/hero-1080.mp4" : "/hero/hero-720.mp4";
     video.load();
+
+    // No celular o trilho é mais curto. Seis telas de rolagem num aparelho onde
+    // cada quadro custa mais para decodificar viram uma travessia longa demais.
+    if (!grande) setTelas(TELAS_NO_CELULAR);
+
+    // No iOS o decodificador de vídeo só acorda depois de um play de verdade.
+    // Sem isto, mexer em `currentTime` não muda nada na tela: o hero fica
+    // congelado no primeiro quadro e a rolagem parece quebrada. Um play seguido
+    // de pause imediato acorda o decodificador sem o vídeo chegar a andar —
+    // funciona porque o elemento é `muted` e `playsInline`.
+    const acordarDecodificador = () => {
+      const p = video.play();
+      if (p && typeof p.then === "function") {
+        p.then(() => video.pause()).catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+
+    acordarDecodificador();
+    video.addEventListener("loadeddata", acordarDecodificador, { once: true });
+    return () => video.removeEventListener("loadeddata", acordarDecodificador);
   }, []);
 
   /**
@@ -147,8 +174,12 @@ export default function Hero() {
       frame = requestAnimationFrame(loop);
     };
 
-    if (video.readyState >= 1) aoCarregar();
-    else video.addEventListener("loadedmetadata", aoCarregar);
+    // HAVE_CURRENT_DATA: existe quadro decodificado. Esperar só o metadado
+    // (HAVE_METADATA) fazia o laço começar antes de haver o que mostrar — na
+    // rede do celular o metadado chega muito antes dos dados, e as buscas
+    // caíam no vazio.
+    if (video.readyState >= 2) aoCarregar();
+    else video.addEventListener("loadeddata", aoCarregar);
 
     window.addEventListener("scroll", aoRolar, { passive: true });
     window.addEventListener("resize", aoRolar);
@@ -156,7 +187,7 @@ export default function Hero() {
     return () => {
       vivo = false;
       cancelAnimationFrame(frame);
-      video.removeEventListener("loadedmetadata", aoCarregar);
+      video.removeEventListener("loadeddata", aoCarregar);
       window.removeEventListener("scroll", aoRolar);
       window.removeEventListener("resize", aoRolar);
     };
@@ -170,7 +201,7 @@ export default function Hero() {
     <section
       ref={trilhoRef}
       aria-label={`${DESTAQUE} sendo montado camada por camada`}
-      style={{ height: `${TELAS_DE_SCROLL * 100}svh` }}
+      style={{ height: `${telas * 100}svh` }}
       className="relative"
     >
       <div
@@ -265,7 +296,7 @@ export default function Hero() {
           pilha — sobreposto ao hambúrguer ele lia como se estivesse na frente.
         */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-carvao)] via-[var(--color-carvao)]/85 to-transparent pt-28 pb-8">
-          <div className="mx-auto flex max-w-6xl items-end justify-between gap-6 px-6">
+          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               {/*
                 A manchete vem antes do nome do lanche porque é ela que segura
@@ -283,30 +314,31 @@ export default function Hero() {
             </div>
 
             {/*
-              Convite a rolar: a mesma serifa do site. Fica aqui dentro do
-              rodapé, e não flutuando no meio da tela, porque em janela baixa
-              ele caía em cima do hambúrguer e sumia contra a imagem.
+              Convite a rolar. Antes era `hidden sm:flex`, ou seja: não aparecia
+              em celular nenhum, justo onde a rolagem é a única forma de navegar.
+              Agora aparece sempre, como etiqueta com borda em brasa — texto
+              cinza e pequeno sumia contra a foto.
             */}
             <div
-              className="hidden shrink-0 items-center gap-3 sm:flex"
+              className="flex w-full shrink-0 items-center justify-center gap-3 rounded-full border border-[var(--color-brasa)]/45 bg-[var(--color-carvao)]/70 px-5 py-3 backdrop-blur-sm sm:w-auto"
               style={{ opacity: forcaConvite }}
             >
-              <span className="titulo-vitrine text-[13px] uppercase tracking-[0.35em] text-[var(--color-creme)]/70">
+              <span className="text-[12px] font-medium uppercase tracking-[0.28em] text-[var(--color-brasa)]">
                 role para montar
               </span>
               <svg
-                width="12"
+                width="14"
                 height="22"
-                viewBox="0 0 12 22"
+                viewBox="0 0 14 22"
                 fill="none"
                 aria-hidden
-                className="text-[var(--color-brasa)]"
-                style={{ animation: "seta-desce 2s ease-in-out infinite" }}
+                className="shrink-0 text-[var(--color-brasa)]"
+                style={{ animation: "seta-desce 1.8s ease-in-out infinite" }}
               >
                 <path
-                  d="M6 0v19M1 14.5l5 5 5-5"
+                  d="M7 1v18M1.5 14l5.5 5.5L12.5 14"
                   stroke="currentColor"
-                  strokeWidth="1.25"
+                  strokeWidth="1.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />

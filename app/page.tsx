@@ -4,6 +4,7 @@ import CamadasMobile from "@/components/CamadasMobile";
 import Cardapio from "@/components/Cardapio";
 import Hero from "@/components/Hero";
 import Rodape from "@/components/Rodape";
+import Transicao from "@/components/Transicao";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <main>
         <Hero />
         <CamadasMobile />
+        <Transicao />
         <Cardapio />
       </main>
       <Rodape />

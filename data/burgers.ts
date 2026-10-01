@@ -90,21 +90,6 @@ export const DESTAQUE = "Burguer do Palhaço";
  */
 export const DESTAQUES: Destaque[] = [
   {
-    slug: "burguer-7",
-    numero: "07",
-    nome: "Burguer 7",
-    chamada:
-      "Anel de cebola empanado vai dentro do lanche. Aqui não é acompanhamento, é camada.",
-    ingredientes: [
-      "Burguer",
-      "Bacon",
-      "Anéis de cebola empanados",
-      "Cheddar fatiado",
-    ],
-    foto: "/cardapio/burguer-7.jpg",
-    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon no pão escuro",
-  },
-  {
     slug: "burguer-14",
     numero: "14",
     nome: "Burguer 14",
@@ -118,6 +103,21 @@ export const DESTAQUES: Destaque[] = [
     ],
     foto: "/cardapio/burguer-14.jpg",
     alt: "Burguer 14 segurado com as duas mãos: queijo canastra empanado, tomate grelhado e manjericão",
+  },
+  {
+    slug: "burguer-7",
+    numero: "07",
+    nome: "Burguer 7",
+    chamada:
+      "Anel de cebola empanado vai dentro do lanche. Aqui não é acompanhamento, é camada.",
+    ingredientes: [
+      "Burguer",
+      "Bacon",
+      "Anéis de cebola empanados",
+      "Cheddar fatiado",
+    ],
+    foto: "/cardapio/burguer-7.jpg",
+    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon no pão escuro",
   },
   {
     slug: "rodizio",
@@ -174,3 +174,31 @@ export const RESTO: { nome: string; ingredientes: string }[] = [
     ingredientes: "Cheddar fatiado, alface e tomate em tamanho menor, com fritas",
   },
 ];
+
+/**
+ * Seção de transição: um lanche vira o outro conforme o scroll, num quadro
+ * vertical (9:16) — o formato em que o vídeo do Flow vai ser gerado.
+ *
+ * Enquanto o vídeo não existe, a seção dissolve uma foto na outra. Quando ele
+ * chegar, entra em `video` e a seção passa a fazer scrub como o hero.
+ *
+ * PRECISA DE CONFIRMAÇÃO: a foto inicial foi lida como Burguer 14 pela
+ * montagem — pão de gergelim, manjericão, tomate grelhado, duas carnes e o
+ * empanado no meio, igual à foto em que o lanche aparece nas mãos. É leitura
+ * da imagem, não informação da casa.
+ */
+export const TRANSICAO = {
+  titulo: "Muda o pão, muda o número.",
+  texto: "Mesma chapa, mesmo balcão. Troca o pão, troca o recheio — e o 14 vira o 7.",
+  video: undefined as string | undefined,
+  inicio: {
+    slug: "burguer-14",
+    foto: "/cardapio/empanado.jpg",
+    alt: "Burguer 14 de lado: pão de gergelim, manjericão, tomate grelhado, duas carnes e queijo empanado",
+  },
+  fim: {
+    slug: "burguer-7",
+    foto: "/cardapio/burguer-7.jpg",
+    alt: "Burguer 7: pão escuro, anéis de cebola empanados, cheddar derretido e bacon",
+  },
+};

@@ -1,209 +1,88 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-import { DESTAQUES, TRANSICAO } from "@/data/burgers";
-
-/** Curva suave de 0 a 1: a troca acelera no meio e assenta nas pontas. */
-function suave(x: number) {
-  const t = Math.min(1, Math.max(0, x));
-  return t * t * (3 - 2 * t);
-}
-
-const ingredientesDe = (slug: string) =>
-  DESTAQUES.find((d) => d.slug === slug)?.ingredientes ?? [];
-
-const numeroDe = (slug: string) =>
-  DESTAQUES.find((d) => d.slug === slug)?.numero ?? "";
+import { useEffect, useRef } from "react";
+import { TRANSICAO } from "@/data/burgers";
 
 /**
- * Um lanche vira o outro conforme o scroll, num quadro vertical (9:16).
+ * O vídeo do Flow — o 14 sai, o 7 entra, e volta — rodando sozinho num quadro
+ * vertical. Antes ele andava conforme o scroll e travava; agora toca em loop.
  *
- * No celular o quadro ocupa a tela inteira, que já é quase 9:16. No computador
- * ele fica numa coluna à direita do texto — esticar um vídeo em pé numa tela
- * deitada cortaria metade do lanche.
- *
- * Com o vídeo do Flow em TRANSICAO.video, a seção faz scrub como o hero: os
- * dois lanches deslizam inteiros conforme o scroll. Sem vídeo, cai na
- * dissolução entre as duas fotos.
+ * Só baixa quando está chegando perto da tela (o arquivo não é necessário no
+ * primeiro carregamento) e para de tocar quando sai dela.
  */
 export default function Transicao() {
-  const trilhoRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const alvoRef = useRef(0);
-  const [progresso, setProgresso] = useState(0);
-
-  useEffect(() => {
-    const trilho = trilhoRef.current;
-    if (!trilho) return;
-    let frame = 0;
-
-    const medir = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        const percorrivel = trilho.offsetHeight - window.innerHeight;
-        const rolado = -trilho.getBoundingClientRect().top;
-        const p =
-          percorrivel > 0 ? Math.min(1, Math.max(0, rolado / percorrivel)) : 0;
-        alvoRef.current = p;
-        setProgresso(p);
-      });
-    };
-
-    medir();
-    window.addEventListener("scroll", medir, { passive: true });
-    window.addEventListener("resize", medir);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", medir);
-      window.removeEventListener("resize", medir);
-    };
-  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !TRANSICAO.video) return;
-    video.src = TRANSICAO.video;
-    video.load();
-
-    const acordar = () => {
-      const p = video.play();
-      if (p && typeof p.then === "function") p.then(() => video.pause()).catch(() => {});
-      else video.pause();
-    };
-    acordar();
-
-    let atual = 0;
-    let frame = 0;
-    let vivo = true;
-    const laco = () => {
-      if (!vivo) return;
-      atual += (alvoRef.current - atual) * 0.12;
-      const d = video.duration;
-      if (Number.isFinite(d) && d > 0) {
-        const t = atual * d;
-        if (!video.seeking && Math.abs(video.currentTime - t) > 1 / 48) {
-          video.currentTime = t;
+    if (!video) return;
+    let carregado = false;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          if (!carregado) {
+            video.src = TRANSICAO.video;
+            video.load();
+            carregado = true;
+          }
+          video.play().catch(() => {});
+        } else if (carregado) {
+          video.pause();
         }
-      }
-      frame = requestAnimationFrame(laco);
-    };
-    const comecar = () => {
-      atual = alvoRef.current;
-      frame = requestAnimationFrame(laco);
-    };
-    if (video.readyState >= 2) comecar();
-    else video.addEventListener("loadeddata", comecar, { once: true });
-
-    return () => {
-      vivo = false;
-      cancelAnimationFrame(frame);
-      video.removeEventListener("loadeddata", comecar);
-    };
+      },
+      { rootMargin: "300px 0px" },
+    );
+    obs.observe(video);
+    return () => obs.disconnect();
   }, []);
-
-  // A troca acontece no miolo do trilho. As pontas ficam paradas de propósito:
-  // o olho precisa reconhecer cada lanche antes de ver um virar o outro.
-  const troca = suave((progresso - 0.25) / 0.5);
-
-  // Foto dissolve; texto não. Dois números ou duas listas de ingredientes
-  // sobrepostos a 50% viram borrão ilegível ("14" + "07" lia "1047"). Por isso
-  // o texto do primeiro lanche sai inteiro na primeira metade da troca, e só
-  // depois o do segundo entra.
-  const saida = suave(1 - troca * 2);
-  const entrada = suave(troca * 2 - 1);
-
-  const lados = [
-    { ...TRANSICAO.inicio, opacidade: 1 - troca, texto: saida, desloca: -1 },
-    { ...TRANSICAO.fim, opacidade: troca, texto: entrada, desloca: 1 },
-  ];
 
   return (
     <section
-      ref={trilhoRef}
       aria-labelledby="transicao-titulo"
-      className="relative h-[240svh] border-t border-[var(--color-carvao-claro)]"
+      className="relative overflow-hidden bg-[var(--color-amarelo)] px-5 pb-20 pt-24 md:px-6 md:pb-28 md:pt-32"
     >
-      <div className="sticky top-0 h-svh overflow-hidden">
-        <div className="relative mx-auto h-full max-w-6xl md:px-6">
-          {/* Quadro 9:16 — tela cheia no celular, coluna à direita no computador. */}
-          <div className="absolute inset-0 md:inset-auto md:right-6 md:top-[53%] md:aspect-[9/16] md:h-[74svh] md:-translate-y-1/2 md:overflow-hidden md:rounded-sm">
-            {TRANSICAO.video ? (
-              <video
-                ref={videoRef}
-                className="absolute inset-0 h-full w-full object-cover"
-                poster={TRANSICAO.poster}
-                preload="auto"
-                muted
-                playsInline
-                disablePictureInPicture
-                tabIndex={-1}
-                aria-label={`${TRANSICAO.inicio.alt}, que desliza para fora enquanto entra o ${TRANSICAO.fim.alt}`}
-              />
-            ) : lados.map((lado) => (
-              <Image
-                key={lado.slug}
-                src={lado.foto}
-                alt={lado.alt}
-                fill
-                sizes="(min-width: 768px) 480px, 100vw"
-                className="object-cover"
-                style={{
-                  opacity: lado.opacidade,
-                  // Um respiro de escala junto da dissolução: sem ele, a troca
-                  // de foto lê como corte seco.
-                  transform: `scale(${1.04 - 0.04 * lado.opacidade})`,
-                }}
-              />
-            ))}
-            {/* No celular o texto fica por cima da foto e precisa do véu. */}
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-[var(--color-carvao)] via-[var(--color-carvao)]/40 to-transparent md:hidden"
+      <div className="mx-auto grid max-w-6xl items-center gap-12 md:grid-cols-[1.1fr_0.9fr] md:gap-16">
+        <div className="text-[var(--color-preto)]">
+          <p className="titulo flex items-center gap-4 text-[clamp(5rem,14vw,10rem)]" aria-hidden>
+            <span>{TRANSICAO.de}</span>
+            <svg viewBox="0 0 60 40" className="h-[0.42em] w-auto" fill="none">
+              <path d="M2 14h40V3l16 17-16 17V26H2z" fill="currentColor" />
+            </svg>
+            <span>{TRANSICAO.para}</span>
+          </p>
+          <h2 id="transicao-titulo" className="titulo mt-4 text-[clamp(2.25rem,5vw,3.75rem)]">
+            {TRANSICAO.titulo}
+          </h2>
+          <p className="mt-5 max-w-md text-lg font-medium leading-relaxed text-[var(--color-preto)]/80">
+            {TRANSICAO.texto}
+          </p>
+          <a
+            href="#cardapio"
+            className="mt-8 inline-flex items-center rounded-full bg-[var(--color-preto)] px-6 py-4 font-bold text-[var(--color-amarelo)] transition-transform hover:-translate-y-0.5"
+          >
+            Ver os 16 burguers
+          </a>
+        </div>
+
+        {/* Quadro vertical com borda grossa e um giro leve: lê como um post
+            colado na parede, que é de onde esse vídeo veio. */}
+        <div className="relative mx-auto w-full max-w-[320px] md:max-w-[360px]">
+          <div className="relative aspect-[9/16] rotate-2 overflow-hidden rounded-[28px] border-[6px] border-[var(--color-preto)] bg-[var(--color-preto)] shadow-[10px_10px_0_var(--color-preto)]">
+            <video
+              ref={videoRef}
+              className="absolute inset-0 h-full w-full object-cover"
+              poster={TRANSICAO.poster}
+              loop
+              muted
+              playsInline
+              preload="none"
+              disablePictureInPicture
+              aria-label={TRANSICAO.alt}
             />
           </div>
-
-          {/* Texto — rodapé sobre a foto no celular, coluna à esquerda no computador. */}
-          <div className="absolute inset-x-0 bottom-0 px-6 pb-14 md:inset-y-0 md:left-6 md:right-auto md:flex md:w-[44%] md:flex-col md:justify-center md:px-0 md:pb-0">
-            <div className="relative h-[clamp(4.5rem,11vw,8.5rem)]" aria-hidden>
-              {lados.map((lado) => (
-                <span
-                  key={lado.slug}
-                  className="titulo-vitrine absolute left-0 top-0 text-[clamp(4.5rem,11vw,8.5rem)] leading-none text-[var(--color-brasa)]"
-                  style={{
-                    opacity: lado.texto,
-                    transform: `translateY(${(1 - lado.texto) * 14 * lado.desloca}px)`,
-                  }}
-                >
-                  {numeroDe(lado.slug)}
-                </span>
-              ))}
-            </div>
-
-            <h2
-              id="transicao-titulo"
-              className="titulo-vitrine mt-2 text-[clamp(2rem,4vw,3.25rem)] leading-tight"
-            >
-              {TRANSICAO.titulo}
-            </h2>
-            <p className="mt-4 max-w-sm text-lg leading-relaxed text-[var(--color-creme)]/85">
-              {TRANSICAO.texto}
-            </p>
-
-            {/* Os ingredientes do lanche que está na tela, trocando junto. */}
-            <div className="relative mt-6 h-12">
-              {lados.map((lado) => (
-                <p
-                  key={lado.slug}
-                  className="absolute inset-x-0 top-0 text-xs uppercase leading-relaxed tracking-[0.14em] text-[var(--color-fumaca)]"
-                  style={{ opacity: lado.texto }}
-                  aria-hidden={lado.texto < 0.5}
-                >
-                  {ingredientesDe(lado.slug).join(" · ")}
-                </p>
-              ))}
-            </div>
-          </div>
+          <span className="titulo absolute -left-4 -top-5 -rotate-6 rounded-lg bg-[var(--color-ketchup)] px-3 py-1.5 text-xl text-white shadow-md">
+            Contém amor
+          </span>
         </div>
       </div>
     </section>

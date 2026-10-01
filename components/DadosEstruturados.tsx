@@ -1,4 +1,4 @@
-import { CASA, DESTAQUES, RESTO } from "@/data/burgers";
+import { CARDAPIO, CASA } from "@/data/burgers";
 import { SITE } from "@/lib/site";
 
 /**
@@ -16,7 +16,7 @@ export default function DadosEstruturados() {
     "@type": "Restaurant",
     name: `${CASA.nomeCompleto} ${CASA.assinaturaDaMarca}`,
     description:
-      "Hamburgueria em Poços de Caldas com cardápio numerado, o Burguer do Palhaço e rodízio todos os dias.",
+      "Hamburgueria em Poços de Caldas com catorze burguers numerados, o Burguer do Palhaço, shakes de 400 ml e rodízio todos os dias.",
     url: SITE,
     image: [`${SITE}/opengraph-image.jpg`],
     logo: `${SITE}/marca/me-poupa.png`,
@@ -47,25 +47,19 @@ export default function DadosEstruturados() {
     hasMenu: {
       "@type": "Menu",
       name: "Cardápio",
-      hasMenuSection: [
-        {
-          "@type": "MenuSection",
-          name: "Burguers",
-          hasMenuItem: [
-            ...DESTAQUES.filter((d) => !d.preco).map((d) => ({
-              "@type": "MenuItem",
-              name: d.nome,
-              description: d.ingredientes.join(", "),
-              image: `${SITE}${d.foto}`,
-            })),
-            ...RESTO.map((r) => ({
-              "@type": "MenuItem",
-              name: r.nome,
-              description: r.ingredientes,
-            })),
-          ],
-        },
-      ],
+      // O cardápio inteiro, aba por aba, sem preço: a casa não publica.
+      hasMenuSection: CARDAPIO.map((aba) => ({
+        "@type": "MenuSection",
+        name: aba.rotulo,
+        hasMenuItem: aba.grupos.flatMap((g) =>
+          g.itens.map((item) => ({
+            "@type": "MenuItem",
+            name: item.nome,
+            ...(item.descricao && { description: item.descricao }),
+            ...(item.foto && { image: `${SITE}${item.foto}` }),
+          })),
+        ),
+      })),
     },
   };
 

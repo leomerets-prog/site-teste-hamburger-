@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Inter } from "next/font/google";
+import { Anton, Inter } from "next/font/google";
 import { CASA } from "@/data/burgers";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
-const serifa = Instrument_Serif({
+// Anton tem o mesmo corpo do "BURGERS & SHAKES" do logotipo: condensada,
+// pesada, em caixa alta. Inter fica com o texto corrido.
+const titulo = Anton({
   subsets: ["latin"],
   weight: "400",
-  variable: "--fonte-serifa",
+  variable: "--fonte-titulo",
   display: "swap",
 });
 
-const sans = Inter({
+const corpo = Inter({
   subsets: ["latin"],
-  variable: "--fonte-sans",
+  variable: "--fonte-corpo",
   display: "swap",
 });
 
@@ -69,9 +71,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${serifa.variable} ${sans.variable}`}>
-      {/* Pinta a barra do navegador no celular com o preto do site. */}
-      <meta name="theme-color" content="#0a0a0b" />
+    <html lang="pt-BR" className={`${titulo.variable} ${corpo.variable}`}>
+      {/* Pinta a barra do navegador no celular com o amarelo da marca. */}
+      <meta name="theme-color" content="#fdc403" />
       <body>{children}</body>
     </html>
   );

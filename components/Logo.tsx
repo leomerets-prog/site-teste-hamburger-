@@ -23,8 +23,8 @@ export default function Logo({
       width={1570}
       height={845}
       priority={prioridade}
-      sizes="(min-width: 768px) 200px, 150px"
-      className={`h-auto w-auto select-none ${className}`}
+      sizes="(min-width: 768px) 220px, 160px"
+      className={`select-none ${className}`}
     />
   );
 }

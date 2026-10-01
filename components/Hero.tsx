@@ -1,348 +1,213 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CAMADAS, CASA, DESTAQUE, PILHA } from "@/data/burgers";
-
-/** Altura de rolagem do hero. Quanto maior, mais devagar a montagem acontece. */
-const TELAS_DE_SCROLL = 6;
-
-/** No celular o trilho encurta: decodificar custa mais e a paciência é menor. */
-const TELAS_NO_CELULAR = 4;
-
-/** Ponto do scrub em que as legendas já saíram de cena. */
-const FIM_DAS_LEGENDAS = 0.42;
+import { CAMADAS, HERO, PILHA } from "@/data/burgers";
 
 /** Proporção do vídeo do hero. */
 const PROPORCAO = 16 / 9;
 
-/** Metade de um quadro a 24 fps: abaixo disso, buscar de novo não muda a tela. */
-const MEIO_QUADRO = 1 / 48;
+/**
+ * Linha do tempo do vídeo em loop, em segundos. O arquivo é ida e volta:
+ * monta (8s), segura montado, desmonta (8s), segura aberto — e repete sem
+ * emenda, porque o último quadro é igual ao primeiro.
+ */
+const MONTA = 8;
+const SEGURA_MONTADO = 1.2;
+const DESMONTA = 8;
 
-type Caixa = {
-  x: number;
-  y: number;
-  largura: number;
-  altura: number;
-  /** Altura do palco (a viewport), usada para saber o que cai na faixa do título. */
-  palco: number;
-};
+/** Quanto o lanche está montado no instante t: 0 aberto, 1 fechado. */
+function montagem(t: number) {
+  if (t < MONTA) return t / MONTA;
+  if (t < MONTA + SEGURA_MONTADO) return 1;
+  if (t < MONTA + SEGURA_MONTADO + DESMONTA)
+    return 1 - (t - MONTA - SEGURA_MONTADO) / DESMONTA;
+  return 0;
+}
 
-/** Altura, no rodapé do hero, reservada para o nome do lanche. */
-const FAIXA_DO_TITULO = 96;
+/** Faixas que as legendas não invadem: o menu no topo e o texto embaixo. */
+const FAIXA_DO_TOPO = 96;
+const FAIXA_DO_TEXTO = 300;
 
-/** Altura, no topo, reservada para a marca e o menu. */
-const FAIXA_DO_CABECALHO = 72;
+type Caixa = { x: number; y: number; largura: number; altura: number; palco: number };
 
+/**
+ * Hero com o vídeo rodando sozinho. Antes o vídeo andava conforme o scroll, e
+ * cada movimento do dedo virava uma busca de quadro — no celular, travava.
+ * Agora ele toca em loop, mudo, e só para quando sai da tela.
+ */
 export default function Hero() {
-  const trilhoRef = useRef<HTMLDivElement>(null);
   const palcoRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [progresso, setProgresso] = useState(0);
-  const [pronto, setPronto] = useState(false);
+  const legendasRef = useRef<HTMLDivElement>(null);
   const [caixa, setCaixa] = useState<Caixa | null>(null);
-  const [telas, setTelas] = useState(TELAS_DE_SCROLL);
 
-  // A escolha do arquivo é feita aqui, e não com <source media="...">: navegadores
-  // ignoram o atributo `media` dentro de <video>, e o resultado era o celular
-  // baixando a versão grande.
-  //
-  // Ficou em 1080p, e não em 1440p: buscar um instante num quadro maior custa
-  // decodificação proporcional ao número de pixels, e o scroll é a coisa que o
-  // visitante mais sente. A textura que se via em 1440p era da própria fonte,
-  // então a resolução extra pesava sem entregar nitidez de verdade.
+  // Arquivo certo para a tela. `<source media>` é ignorado dentro de <video>.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
-
-    video.src = grande ? "/hero/hero-1080.mp4" : "/hero/hero-720.mp4";
+    video.src = grande ? "/hero/hero-loop-1080.mp4" : "/hero/hero-loop-720.mp4";
     video.load();
+    video.play().catch(() => {});
 
-    // No celular o trilho é mais curto. Seis telas de rolagem num aparelho onde
-    // cada quadro custa mais para decodificar viram uma travessia longa demais.
-    if (!grande) setTelas(TELAS_NO_CELULAR);
-
-    // No iOS o decodificador de vídeo só acorda depois de um play de verdade.
-    // Sem isto, mexer em `currentTime` não muda nada na tela: o hero fica
-    // congelado no primeiro quadro e a rolagem parece quebrada. Um play seguido
-    // de pause imediato acorda o decodificador sem o vídeo chegar a andar —
-    // funciona porque o elemento é `muted` e `playsInline`.
-    const acordarDecodificador = () => {
-      const p = video.play();
-      if (p && typeof p.then === "function") {
-        p.then(() => video.pause()).catch(() => {});
-      } else {
-        video.pause();
-      }
-    };
-
-    acordarDecodificador();
-    video.addEventListener("loadeddata", acordarDecodificador, { once: true });
-    return () => video.removeEventListener("loadeddata", acordarDecodificador);
-  }, []);
-
-  /**
-   * O vídeo sangra a tela inteira (object-cover), então parte do quadro fica
-   * cortada. Aqui recalculamos onde o quadro 16:9 realmente caiu — é isso que
-   * mantém cada legenda grudada no ingrediente certo, em vez de assumir que o
-   * vídeo ocupa exatamente a viewport.
-   */
-  useEffect(() => {
-    const palco = palcoRef.current;
-    if (!palco) return;
-
-    const medir = () => {
-      const { width: W, height: H } = palco.getBoundingClientRect();
-      if (!W || !H) return;
-      // object-cover: o quadro cresce até cobrir os dois eixos.
-      const altura = Math.max(W / PROPORCAO, H);
-      const largura = altura * PROPORCAO;
-      setCaixa({
-        x: (W - largura) / 2,
-        y: (H - altura) / 2,
-        largura,
-        altura,
-        palco: H,
-      });
-    };
-
-    medir();
-    const observador = new ResizeObserver(medir);
-    observador.observe(palco);
+    // Fora da tela, para de decodificar: economiza bateria e deixa o resto
+    // da página rolar liso.
+    const observador = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) video.play().catch(() => {});
+      else video.pause();
+    });
+    observador.observe(video);
     return () => observador.disconnect();
   }, []);
 
+  // Onde o quadro 16:9 cai depois do corte do object-cover. As legendas se
+  // ancoram nele, e não na viewport.
   useEffect(() => {
-    const video = videoRef.current;
-    const trilho = trilhoRef.current;
-    if (!video || !trilho) return;
-
-    const reduzido = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    let alvo = 0;
-    let atual = 0;
-    let frame = 0;
-    let vivo = true;
-
+    const palco = palcoRef.current;
+    if (!palco) return;
     const medir = () => {
-      const percorrivel = trilho.offsetHeight - window.innerHeight;
-      if (percorrivel <= 0) return 0;
-      const rolado = -trilho.getBoundingClientRect().top;
-      return Math.min(1, Math.max(0, rolado / percorrivel));
+      const { width: W, height: H } = palco.getBoundingClientRect();
+      if (!W || !H) return;
+      const altura = Math.max(W / PROPORCAO, H);
+      const largura = altura * PROPORCAO;
+      setCaixa({ x: (W - largura) / 2, y: (H - altura) / 2, largura, altura, palco: H });
     };
-
-    const aoRolar = () => {
-      alvo = medir();
-      setProgresso(alvo);
-    };
-
-    const loop = () => {
-      if (!vivo) return;
-      // Interpolação: o vídeo persegue o scroll em vez de saltar com ele.
-      // Sem isso, o scrub fica granulado no trackpad.
-      atual += (alvo - atual) * 0.12;
-      const duracao = video.duration;
-      if (Number.isFinite(duracao) && duracao > 0) {
-        const tempo = atual * duracao;
-        // Dois freios, e os dois importam para o scroll não engasgar:
-        //
-        // `video.seeking` evita empilhar pedidos — enquanto o navegador ainda
-        // está buscando um instante, pedir outro só joga trabalho fora.
-        //
-        // MEIO_QUADRO evita pedir um instante que daria exatamente a mesma
-        // imagem. Antes o limite era 0,01s, quase quatro pedidos por quadro
-        // exibido: três deles não mudavam nada na tela e ainda assim custavam
-        // uma decodificação cada.
-        if (!video.seeking && Math.abs(video.currentTime - tempo) > MEIO_QUADRO) {
-          video.currentTime = tempo;
-        }
-      }
-      frame = requestAnimationFrame(loop);
-    };
-
-    const aoCarregar = () => {
-      setPronto(true);
-      aoRolar();
-      atual = alvo;
-      if (reduzido) {
-        // Sem scrub: mostra o lanche montado e pronto.
-        video.currentTime = video.duration || 0;
-        return;
-      }
-      frame = requestAnimationFrame(loop);
-    };
-
-    // HAVE_CURRENT_DATA: existe quadro decodificado. Esperar só o metadado
-    // (HAVE_METADATA) fazia o laço começar antes de haver o que mostrar — na
-    // rede do celular o metadado chega muito antes dos dados, e as buscas
-    // caíam no vazio.
-    if (video.readyState >= 2) aoCarregar();
-    else video.addEventListener("loadeddata", aoCarregar);
-
-    window.addEventListener("scroll", aoRolar, { passive: true });
-    window.addEventListener("resize", aoRolar);
-
-    return () => {
-      vivo = false;
-      cancelAnimationFrame(frame);
-      video.removeEventListener("loadeddata", aoCarregar);
-      window.removeEventListener("scroll", aoRolar);
-      window.removeEventListener("resize", aoRolar);
-    };
+    medir();
+    const obs = new ResizeObserver(medir);
+    obs.observe(palco);
+    return () => obs.disconnect();
   }, []);
 
-  // As legendas vivem só enquanto o lanche está desmontado e pequeno.
-  const forcaLegendas = Math.max(0, 1 - progresso / FIM_DAS_LEGENDAS);
-  const forcaConvite = Math.max(0, 1 - progresso * 8);
+  // As legendas acompanham o tempo do vídeo. Escreve direto no estilo, sem
+  // passar pelo React: são 60 atualizações por segundo e nenhuma precisa
+  // re-renderizar componente nenhum.
+  useEffect(() => {
+    let frame = 0;
+    const laco = () => {
+      const video = videoRef.current;
+      const camada = legendasRef.current;
+      if (video && camada) {
+        const forca = Math.max(0, 1 - montagem(video.currentTime) / 0.4);
+        camada.style.opacity = String(forca);
+        camada.style.setProperty("--recuo", `${(1 - forca) * 24}px`);
+      }
+      frame = requestAnimationFrame(laco);
+    };
+    frame = requestAnimationFrame(laco);
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
     <section
-      ref={trilhoRef}
-      aria-label={`${DESTAQUE} sendo montado camada por camada`}
-      style={{ height: `${telas * 100}svh` }}
-      className="relative"
+      id="topo"
+      aria-label="Me Poupa — hambúrguer sendo montado"
+      className="relative bg-[var(--color-preto)]"
     >
-      <div
-        ref={palcoRef}
-        className="sticky top-0 h-svh w-full overflow-hidden bg-[var(--color-carvao)]"
-      >
-        {/*
-          O vídeo sangra a tela inteira. A caixa 16:9 exata que existia aqui
-          antes deixava costura visível nas laterais em telas largas e baixas —
-          o vídeo tem vinheta e o fundo dele nunca bate com o preto puro do
-          site. Agora o corte é assumido, e as legendas se ajustam a ele.
-        */}
+      <div ref={palcoRef} className="relative h-svh min-h-[620px] w-full overflow-hidden">
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
           poster="/hero/poster-start.webp"
-          preload="auto"
+          autoPlay
+          loop
           muted
           playsInline
+          preload="auto"
           disablePictureInPicture
           tabIndex={-1}
+          aria-hidden
         />
 
-        {/* Legendas — só no desktop, onde sobra espaço lateral. */}
+        {/* Legendas — só no computador, onde sobra espaço dos lados do lanche. */}
         {caixa && (
           <div
-            className="pointer-events-none absolute inset-0 hidden md:block"
+            ref={legendasRef}
             aria-hidden
-            style={{ opacity: forcaLegendas }}
+            className="pointer-events-none absolute inset-0 hidden md:block"
+            style={{ opacity: 1 }}
           >
-            {CAMADAS.map((camada, i) => {
-              const esquerda = camada.lado === "esquerda";
-              const recuo = (esquerda ? -1 : 1) * (1 - forcaLegendas) * 24;
-              const topo = caixa.y + (camada.y / 100) * caixa.altura;
+            {CAMADAS.map((c, i) => {
+              const esquerda = c.lado === "esquerda";
+              const topo = caixa.y + (c.y / 100) * caixa.altura;
               const ancora =
-                caixa.x +
-                ((esquerda ? PILHA.esquerda : PILHA.direita) / 100) *
-                  caixa.largura;
-
-              // Quanto mais larga a janela, mais o vídeo é cortado em cima e
-              // embaixo — e as camadas das pontas acabam caindo em cima do
-              // menu ou do nome do lanche. Nesses casos a legenda cede o lugar
-              // em vez de brigar; a lista completa segue logo abaixo do hero.
-              const invasao = Math.max(
-                FAIXA_DO_CABECALHO - topo,
-                topo - (caixa.palco - FAIXA_DO_TITULO),
-              );
-              const cedeEspaco =
-                invasao > 0 ? Math.max(0, 1 - invasao / 24) : 1;
-
+                caixa.x + ((esquerda ? PILHA.esquerda : PILHA.direita) / 100) * caixa.largura;
+              // Legenda que cairia em cima do menu ou do texto cede o lugar.
+              const invade = topo < FAIXA_DO_TOPO || topo > caixa.palco - FAIXA_DO_TEXTO;
+              if (invade) return null;
               return (
                 <div
-                  key={camada.nome}
+                  key={c.nome}
                   className="absolute flex items-center gap-3"
                   style={{
                     top: topo,
                     left: esquerda ? undefined : ancora,
                     right: esquerda ? `calc(100% - ${ancora}px)` : undefined,
                     flexDirection: esquerda ? "row" : "row-reverse",
-                    transform: `translateY(-50%) translateX(${recuo}px)`,
-                    opacity: cedeEspaco,
+                    transform: `translateY(-50%) translateX(calc(var(--recuo, 0px) * ${esquerda ? -1 : 1}))`,
                   }}
                 >
-                  <span
-                    className={`text-xs whitespace-nowrap uppercase tracking-[0.18em] text-[var(--color-creme)] ${
-                      esquerda ? "text-right" : "text-left"
-                    }`}
-                  >
-                    {camada.nome}
+                  <span className="whitespace-nowrap rounded-full bg-[var(--color-amarelo)] px-3 py-1 text-xs font-bold uppercase tracking-[0.08em] text-[var(--color-preto)]">
+                    {c.nome}
                   </span>
                   <span
-                    className="h-px w-[clamp(2rem,6vw,6rem)] shrink-0 bg-[var(--color-creme)]/50"
+                    className="h-px w-[clamp(2rem,5vw,5rem)] shrink-0 bg-[var(--color-amarelo)]"
                     style={{
                       transformOrigin: esquerda ? "right center" : "left center",
-                      animation: pronto
-                        ? `desenhar-linha 700ms ${
-                            300 + i * 90
-                          }ms both cubic-bezier(.2,.7,.3,1)`
-                        : undefined,
-                      transform: pronto ? undefined : "scaleX(0)",
+                      animation: `desenhar-linha 700ms ${1900 + i * 90}ms both cubic-bezier(.2,.7,.3,1)`,
                     }}
                   />
-                  <span className="h-1 w-1 shrink-0 rounded-full bg-[var(--color-brasa)]" />
+                  <span className="h-2 w-2 shrink-0 rounded-full border-2 border-[var(--color-amarelo)] bg-[var(--color-preto)]" />
                 </div>
               );
             })}
           </div>
         )}
 
-        {/*
-          Rodapé do hero. O nome do lanche fica no canto, fora do caminho da
-          pilha — sobreposto ao hambúrguer ele lia como se estivesse na frente.
-        */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-carvao)] via-[var(--color-carvao)]/85 to-transparent pt-28 pb-8">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              {/*
-                A manchete vem antes do nome do lanche porque é ela que segura
-                quem chegou: diz em uma linha o que essa casa tem de próprio.
-                O nome do lanche entra como legenda do que está na tela.
-              */}
-              {/* text-balance reparte as duas linhas com pesos parecidos, em vez
-                  de deixar "o seu." sozinho embaixo. */}
-              <h1 className="titulo-vitrine max-w-2xl text-balance text-[clamp(1.5rem,3vw,2.5rem)] leading-tight">
-                {CASA.manchete}
-              </h1>
-              <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[var(--color-fumaca)]">
-                Na tela: {DESTAQUE}
-              </p>
-            </div>
+        {/* Texto do hero, sobre um véu escuro. Sobe junto com a cortina. */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-preto)] via-[var(--color-preto)]/75 to-transparent pb-14 pt-40 md:pb-16">
+          <div
+            className="mx-auto max-w-6xl px-5 md:px-6"
+            style={{ animation: "sobe 900ms 1.2s both cubic-bezier(.2,.7,.3,1)" }}
+          >
+            <p className="mb-4 inline-block -rotate-2 rounded-md bg-[var(--color-amarelo)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--color-preto)]">
+              {HERO.etiqueta}
+            </p>
 
-            {/*
-              Convite a rolar. Antes era `hidden sm:flex`, ou seja: não aparecia
-              em celular nenhum, justo onde a rolagem é a única forma de navegar.
-              Agora aparece sempre, como etiqueta com borda em brasa — texto
-              cinza e pequeno sumia contra a foto.
-            */}
-            <div
-              className="flex w-full shrink-0 items-center justify-center gap-3 rounded-full border border-[var(--color-brasa)]/45 bg-[var(--color-carvao)]/70 px-5 py-3 backdrop-blur-sm sm:w-auto"
-              style={{ opacity: forcaConvite }}
-            >
-              <span className="text-[12px] font-medium uppercase tracking-[0.28em] text-[var(--color-brasa)]">
-                role para montar
-              </span>
-              <svg
-                width="14"
-                height="22"
-                viewBox="0 0 14 22"
-                fill="none"
-                aria-hidden
-                className="shrink-0 text-[var(--color-brasa)]"
-                style={{ animation: "seta-desce 1.8s ease-in-out infinite" }}
-              >
-                <path
-                  d="M7 1v18M1.5 14l5.5 5.5L12.5 14"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <h1 className="titulo text-[clamp(2.75rem,5.6vw,5.25rem)] text-white">
+              {HERO.manchete}
+              <br />
+              <span className="text-[var(--color-amarelo)]">{HERO.pergunta}</span>
+            </h1>
+
+            <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <p className="max-w-md text-base leading-relaxed text-white/85 md:text-lg">
+                {HERO.texto}
+              </p>
+
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#cardapio"
+                  className="group inline-flex items-center gap-2 rounded-full bg-[var(--color-amarelo)] px-6 py-4 text-base font-bold text-[var(--color-preto)] transition-transform hover:-translate-y-0.5"
+                >
+                  {HERO.botaoCardapio}
+                  <svg
+                    width="14"
+                    height="20"
+                    viewBox="0 0 14 20"
+                    fill="none"
+                    aria-hidden
+                    style={{ animation: "seta-desce 1.6s ease-in-out infinite" }}
+                  >
+                    <path d="M7 1v17M1.5 12.5 7 18l5.5-5.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+                <a
+                  href="#rodizio"
+                  className="inline-flex items-center rounded-full border-2 border-white/80 px-6 py-4 text-base font-bold text-white transition-colors hover:bg-white hover:text-[var(--color-preto)]"
+                >
+                  {HERO.botaoRodizio}
+                </a>
+              </div>
             </div>
           </div>
         </div>

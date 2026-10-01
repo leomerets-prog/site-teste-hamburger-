@@ -1,21 +1,25 @@
+import Abertura from "@/components/Abertura";
 import Cabecalho from "@/components/Cabecalho";
-import DadosEstruturados from "@/components/DadosEstruturados";
-import CamadasMobile from "@/components/CamadasMobile";
 import Cardapio from "@/components/Cardapio";
+import DadosEstruturados from "@/components/DadosEstruturados";
 import Hero from "@/components/Hero";
+import Letreiro from "@/components/Letreiro";
 import Rodape from "@/components/Rodape";
+import Rodizio from "@/components/Rodizio";
 import Transicao from "@/components/Transicao";
 
 export default function Home() {
   return (
     <>
       <DadosEstruturados />
+      <Abertura />
       <Cabecalho />
       <main>
         <Hero />
-        <CamadasMobile />
+        <Letreiro />
         <Transicao />
         <Cardapio />
+        <Rodizio />
       </main>
       <Rodape />
     </>

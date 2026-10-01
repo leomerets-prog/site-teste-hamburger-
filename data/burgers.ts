@@ -1,36 +1,81 @@
+/*
+ * Tudo que é texto e dado do site mora aqui. Trocar de casa, de lanche ou de
+ * frase é mexer neste arquivo — os componentes só desenham.
+ *
+ * Regra que vale para o arquivo inteiro: nome de produto, ingrediente, preço,
+ * endereço e horário só entram se vieram da casa (cardápio, posts, fotos). O
+ * que é proposta de marca — manchete, chamada, piada — pode ser inventado, e
+ * está marcado como tal onde importa.
+ */
+
 export type Ingrediente = {
   nome: string;
-  /** Posição vertical do ingrediente no frame inicial do vídeo, em % da altura. */
+  /** Posição vertical do ingrediente no primeiro quadro do vídeo, em % da altura. */
   y: number;
-  /** Lado onde a legenda se ancora. */
   lado: "esquerda" | "direita";
 };
 
-export type Destaque = {
-  slug: string;
-  /** Numeral do cardápio, quando o lanche tem um. */
-  numero?: string;
-  /** Valor em destaque, para itens que são oferta e não lanche. */
-  preco?: string;
+export type Item = {
   nome: string;
-  chamada: string;
-  ingredientes: string[];
-  foto: string;
-  /** Texto alternativo da foto. */
-  alt: string;
+  /** Número do cardápio. É a identidade da casa: "me vê um 7". */
+  numero?: string;
+  /** Composição, do jeito que está no cardápio impresso. Vazio quando o
+   *  cardápio só traz o nome — melhor nada que um detalhe inventado. */
+  descricao?: string;
+  /** Uma linha de chamada, para os itens com foto. */
+  chamada?: string;
+  foto?: string;
+  alt?: string;
+  /** Etiqueta pequena sobre o card: "do mês", "o da casa". */
+  selo?: string;
+};
+
+export type Grupo = { titulo?: string; nota?: string; itens: Item[] };
+
+export type Aba = {
+  id: string;
+  rotulo: string;
+  titulo: string;
+  intro: string;
+  grupos: Grupo[];
+};
+
+/* ------------------------------------------------------------------ casa */
+
+export const CASA = {
+  nomeCompleto: "Me Poupa",
+  assinaturaDaMarca: "Burgers & Shakes",
+  cidade: "Poços de Caldas, MG",
+  endereco: "Rua Santa Catarina, 271",
+  horario: "Segunda a sábado, a partir das 18h",
+  instagram: "https://www.instagram.com/mepoupaoficial/",
+  arroba: "@mepoupaoficial",
+
+  /**
+   * PRECISA DE CONFIRMAÇÃO: a casa se apresenta assim na bio do Instagram, mas
+   * não diz qual premiação nem em que anos.
+   */
+  selo: "4x melhor hamburgueria da cidade",
+};
+
+/* ------------------------------------------------------------------ hero */
+
+export const HERO = {
+  etiqueta: "Burgers & Shakes · Poços de Caldas",
+  /** A casa numera os lanches; a manchete sai daí. Proposta de marca. */
+  manchete: "Aqui o lanche tem número.",
+  pergunta: "Qual é o seu?",
+  texto:
+    "São 14 burguers numerados, mais o do Palhaço e o Kids. É só falar o número. E, se a fome for das grandes, tem rodízio todo dia.",
+  botaoCardapio: "Ver o cardápio",
+  botaoRodizio: "Rodízio R$ 99,99",
 };
 
 /**
- * Ancoragem das legendas do hero.
- *
- * ATENÇÃO: estes rótulos descrevem o que aparece no VÍDEO, que hoje é um lanche
- * genérico de demonstração — não o Burguer do Palhaço de verdade. As diferenças
- * são o tomate (que o Palhaço não leva) e a quantidade de carne (o Palhaço leva
- * dois smash, o vídeo mostra um). Quando o vídeo real for gravado, estes rótulos
- * mudam junto.
- *
- * Os valores de `y` foram medidos sobre o primeiro frame de
- * `public/hero/hero-1080.mp4`. Trocar o vídeo exige remedi-los.
+ * Legendas do vídeo do hero. ATENÇÃO: o vídeo é um lanche genérico de
+ * demonstração — tem tomate e uma carne só. Quando o vídeo real da casa for
+ * gravado, estes rótulos mudam junto, e os `y` (medidos sobre o primeiro
+ * quadro) precisam ser remedidos.
  */
 export const CAMADAS: Ingrediente[] = [
   { nome: "Pão com gergelim", y: 15, lado: "direita" },
@@ -43,164 +88,232 @@ export const CAMADAS: Ingrediente[] = [
   { nome: "Pão base", y: 85, lado: "esquerda" },
 ];
 
-/** Bordas horizontais da pilha no frame inicial, em % da largura. */
+/** Bordas horizontais da pilha no primeiro quadro, em % da largura. */
 export const PILHA = { esquerda: 37, direita: 64 };
 
-/**
- * A marca agora é o logotipo real da casa, em `public/marca/me-poupa.png`,
- * extraído do perfil deles. Antes era uma reconstrução em serifa — boa como
- * provisório, errada agora que existe o original.
- *
- * O amarelo #FDC403 foi medido no próprio arquivo e virou a cor de destaque do
- * site inteiro, no lugar do âmbar que eu tinha escolhido no escuro.
- */
-export const CASA = {
-  nomeCompleto: "Me Poupa",
-  assinaturaDaMarca: "Burgers & Shakes",
-  cidade: "Poços de Caldas, MG",
-  endereco: "Rua Santa Catarina, 271",
-  horario: "De segunda a sábado, a partir das 18h",
+/* -------------------------------------------------------------- letreiro */
 
-  /**
-   * A manchete sai do que a casa tem de mais próprio: o cardápio é numerado,
-   * de 1 a 14. Nenhum concorrente poderia usar essa frase — que é justamente o
-   * teste de uma boa manchete.
-   */
-  manchete: "Aqui o lanche tem número. Todo mundo tem o seu.",
-
-  /**
-   * PRECISA DE CONFIRMAÇÃO: a casa se apresenta assim na bio do Instagram, mas
-   * não diz qual premiação nem em que anos. Vale perguntar antes de mostrar.
-   */
-  selo: "Quatro vezes a melhor hamburgueria da cidade",
-};
-
-/** Lanche que abre o site, no vídeo do hero. */
-export const DESTAQUE = "Burguer do Palhaço";
-
-/**
- * Blocos grandes do cardápio. São só três porque só existem três fotos reais
- * da casa — inventar imagem para os outros quinze itens seria pior que
- * apresentá-los em lista. Quando a casa mandar mais fotos, cada item promovido
- * para cá é uma entrada nova nesta lista.
- *
- * As fotos são as que a própria casa mandou. A do Burguer 14 confirma a leitura
- * que antes era só palpite: aparecem o tomate grelhado e o manjericão que o
- * cardápio lista, além do empanado.
- */
-export const DESTAQUES: Destaque[] = [
-  {
-    slug: "burguer-14",
-    numero: "14",
-    nome: "Burguer 14",
-    chamada:
-      "Cem gramas de queijo canastra empanado no Doritos. Sim, no Doritos. É o do mês — some quando o mês acabar.",
-    ingredientes: [
-      "2 burguers smash",
-      "100g queijo canastra empanado no Doritos",
-      "Tomate grelhado",
-      "Manjericão",
-    ],
-    foto: "/cardapio/burguer-14.jpg",
-    alt: "Burguer 14 segurado com as duas mãos: queijo canastra empanado, tomate grelhado e manjericão",
-  },
-  {
-    slug: "burguer-7",
-    numero: "07",
-    nome: "Burguer 7",
-    chamada:
-      "Anel de cebola empanado vai dentro do lanche. Aqui não é acompanhamento, é camada.",
-    ingredientes: [
-      "Burguer",
-      "Bacon",
-      "Anéis de cebola empanados",
-      "Cheddar fatiado",
-    ],
-    foto: "/cardapio/burguer-7.jpg",
-    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon no pão escuro",
-  },
-  {
-    slug: "rodizio",
-    preco: "99,99",
-    nome: "O Rodízio",
-    chamada:
-      "Era só no fim de semana. Agora é todo dia. Criança até 5 anos não paga, de 6 a 11 paga meia.",
-    ingredientes: ["Rodízio de burguers", "Todos os dias", "Reserva pelo Direct"],
-    foto: "/cardapio/rodizio.jpg",
-    alt: "Vários mini burguers com cheddar servidos no prato do rodízio",
-  },
+/** "Contém amor" e "Obaaaa" estão impressos no papel de embrulho da casa. */
+export const LETREIRO = [
+  "Burgers & Shakes",
+  "Rodízio todo dia",
+  "Contém amor",
+  "Smash na chapa",
+  "Obaaaa",
+  "Shake de 400 ml",
 ];
 
-/**
- * O resto do cardápio, em lista. Sem foto e sem invenção — o cliente vê a
- * extensão do menu, e a casa decide depois quais itens merecem foto.
- */
-export const RESTO: { nome: string; ingredientes: string }[] = [
-  { nome: "Burguer 1", ingredientes: "Picles e cheddar fatiado" },
-  { nome: "Burguer 2", ingredientes: "Bacon, alface e requeijão cremoso" },
-  { nome: "Burguer 3", ingredientes: "Bacon, alface e creme de gorgonzola" },
-  {
-    nome: "Burguer 4",
-    ingredientes: "Bacon, cebola roxa, molho BBQ e queijo prato",
-  },
-  { nome: "Burguer 5", ingredientes: "Bacon, alface, tomate e queijo prato" },
-  {
-    nome: "Burguer 6",
-    ingredientes: "Pepperoni, rúcula, tomate e requeijão cremoso",
-  },
-  {
-    nome: "Burguer 8",
-    ingredientes: "Bacon, molho de mostarda dijon e cheddar fatiado",
-  },
-  {
-    nome: "Burguer 9",
-    ingredientes: "Cebola caramelizada, bacon e queijo prato",
-  },
-  { nome: "Burguer 10", ingredientes: "2 ovos, cheddar fatiado e bacon" },
-  {
-    nome: "Burguer 11",
-    ingredientes: "Tomate grelhado, bacon caramelizado e queijo brie",
-  },
-  {
-    nome: "Burguer 12",
-    ingredientes: "Alface, pepperoni, molho caesar e queijo minas",
-  },
-  {
-    nome: "Burguer 13",
-    ingredientes: "Burguer de linguiça, vinagrete de picles e queijo minas",
-  },
-  {
-    nome: "Kids",
-    ingredientes: "Cheddar fatiado, alface e tomate em tamanho menor, com fritas",
-  },
-];
+/* ------------------------------------------------------------- transição */
 
 /**
- * Seção de transição: um lanche vira o outro conforme o scroll, num quadro
- * vertical (9:16) — o formato em que o vídeo do Flow vai ser gerado.
- *
- * O vídeo saiu do Flow em 1080x1920 e foi reduzido para 720x1280 com keyframe a
- * cada 6 quadros — mesma receita do hero, para o scrub não engasgar. Sem ele, a
- * seção volta a dissolver uma foto na outra.
- *
- * PRECISA DE CONFIRMAÇÃO: a foto inicial foi lida como Burguer 14 pela
- * montagem — pão de gergelim, manjericão, tomate grelhado, duas carnes e o
- * empanado no meio, igual à foto em que o lanche aparece nas mãos. É leitura
- * da imagem, não informação da casa.
+ * PRECISA DE CONFIRMAÇÃO: o lanche do começo do vídeo foi lido como Burguer 14
+ * pela montagem (gergelim, manjericão, tomate grelhado, duas carnes e empanado).
  */
 export const TRANSICAO = {
-  titulo: "Muda o pão, muda o número.",
-  texto: "Mesma chapa, mesmo balcão. Troca o pão, troca o recheio — e o 14 vira o 7.",
-  video: "/transicao/14-para-7.mp4" as string | undefined,
+  de: "14",
+  para: "07",
+  titulo: "Ficou entre os dois?",
+  texto:
+    "O 14 leva queijo canastra empanado no Doritos. O 7 leva anel de cebola empanado dentro do lanche. Ninguém aqui vai te julgar se pedir os dois.",
+  video: "/transicao/14-e-7-loop.mp4",
   poster: "/transicao/poster.webp",
-  inicio: {
-    slug: "burguer-14",
-    foto: "/cardapio/empanado.jpg",
-    alt: "Burguer 14 de lado: pão de gergelim, manjericão, tomate grelhado, duas carnes e queijo empanado",
-  },
-  fim: {
-    slug: "burguer-7",
-    foto: "/cardapio/burguer-7.jpg",
-    alt: "Burguer 7: pão escuro, anéis de cebola empanados, cheddar derretido e bacon",
-  },
+  alt: "O Burguer 14 desliza para fora do balcão enquanto o Burguer 7 entra no lugar, e depois o contrário",
 };
+
+/* --------------------------------------------------------------- rodízio */
+
+export const RODIZIO = {
+  titulo: "Rodízio todo dia",
+  preco: "99,99",
+  /** Do post da própria casa — que avisa que preço muda em feriado. */
+  texto:
+    "Era só no fim de semana. Agora é todo dia. Burger saindo da chapa até você pedir arrego.",
+  regras: ["Criança até 5 anos não paga", "De 6 a 11 anos paga meia", "Valor pode mudar em feriados"],
+  /** A casa não divulga reserva — o botão só leva pra conversa. */
+  botao: "Chamar no Instagram",
+  foto: "/cardapio/rodizio.jpg",
+  alt: "Vários mini burguers com cheddar no prato do rodízio",
+};
+
+/* -------------------------------------------------------------- cardápio */
+
+/** Abertura da seção. É a pergunta de quem está no balcão. Proposta de marca. */
+export const CHAMADA_CARDAPIO = {
+  etiqueta: "O cardápio",
+  titulo: ["Qual vai ser", "hoje?"],
+};
+
+/**
+ * Transcrito do cardápio que a casa publicou nos destaques do Instagram.
+ * PRECISA DE CONFIRMAÇÃO: o destaque é de outubro de 2023 — itens e
+ * composições podem ter mudado. Nenhum preço, porque o cardápio não traz.
+ */
+export const CARDAPIO: Aba[] = [
+  {
+    id: "burguers",
+    rotulo: "Burguers",
+    titulo: "Escolhe o seu número",
+    intro: "Do 1 ao 14, mais o do Palhaço e o Kids. Pede pelo número que a cozinha entende.",
+    grupos: [
+      {
+        itens: [
+          {
+            numero: "14",
+            nome: "Burguer 14",
+            selo: "Burguer do mês",
+            descricao: "Pão, 2 burgers smash, 100g de queijo canastra empanado no Doritos, tomate grelhado e manjericão",
+            chamada: "Canastra empanado no Doritos. Sim, no Doritos.",
+            foto: "/cardapio/burguer-14.jpg",
+            alt: "Burguer 14 nas mãos: duas carnes, queijo canastra empanado, tomate grelhado e manjericão",
+          },
+          {
+            numero: "07",
+            nome: "Burguer 7",
+            descricao: "Pão, burger, bacon, anéis de cebola empanados e cheddar fatiado",
+            chamada: "O anel de cebola vai dentro. Aqui ele não é acompanhamento, é camada.",
+            foto: "/cardapio/burguer-7.jpg",
+            alt: "Burguer 7: pão escuro, anéis de cebola empanados, cheddar derretido e bacon",
+          },
+          {
+            nome: "Burguer do Palhaço",
+            selo: "O da casa",
+            descricao: "2 burgers smash, alface, queijo cheddar, molho especial, cebola e picles no pão com gergelim",
+          },
+          { numero: "01", nome: "Burguer 1", descricao: "Pão, burger, picles e cheddar fatiado" },
+          { numero: "02", nome: "Burguer 2", descricao: "Pão, burger, bacon, alface e requeijão cremoso" },
+          { numero: "03", nome: "Burguer 3", descricao: "Pão, burger, bacon, alface e creme de gorgonzola" },
+          { numero: "04", nome: "Burguer 4", descricao: "Pão, burger, bacon, cebola roxa, molho BBQ e queijo prato" },
+          { numero: "05", nome: "Burguer 5", descricao: "Pão, burger, bacon, alface, tomate e queijo prato" },
+          { numero: "06", nome: "Burguer 6", descricao: "Pão, burger, pepperoni, rúcula, tomate e requeijão cremoso" },
+          { numero: "08", nome: "Burguer 8", descricao: "Pão, burger, bacon, molho de mostarda dijon e cheddar fatiado" },
+          { numero: "09", nome: "Burguer 9", descricao: "Pão, burger, cebola caramelizada, bacon e queijo prato" },
+          { numero: "10", nome: "Burguer 10", descricao: "Pão, burger, 2 ovos, cheddar fatiado e bacon" },
+          { numero: "11", nome: "Burguer 11", descricao: "Pão, burger, tomate grelhado, bacon caramelizado e queijo brie" },
+          { numero: "12", nome: "Burguer 12", descricao: "Pão, burger, alface, pepperoni, molho caesar e queijo minas" },
+          { numero: "13", nome: "Burguer 13", descricao: "Pão, burger de linguiça, vinagrete de picles e queijo minas" },
+          {
+            nome: "Kids",
+            selo: "Com fritas",
+            descricao: "Pão, burger, cheddar fatiado, alface e tomate em tamanho menor",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "hot-dogs",
+    rotulo: "Hot dogs",
+    titulo: "Hot dogs",
+    intro: "Todos com salsicha defumada, bacon e requeijão. O resto você escolhe: milho, mostarda dijon ou coleslaw.",
+    grupos: [
+      {
+        itens: [
+          { nome: "Hot Corn", descricao: "Pão, salsicha defumada, bacon, milho e requeijão cremoso" },
+          { nome: "Hot Mostarda", descricao: "Pão, salsicha defumada, bacon, requeijão cremoso e mostarda dijon" },
+          { nome: "Hot Law", descricao: "Pão, salsicha defumada, bacon, requeijão cremoso e salada coleslaw" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "porcoes",
+    rotulo: "Porções",
+    titulo: "Porções",
+    intro: "Pra dividir. Ou não.",
+    grupos: [
+      {
+        nota: "Extra de cheddar e bacon em qualquer porção.",
+        itens: [
+          {
+            nome: "Anéis de cebola empanados",
+            descricao: "Na cestinha, com maionese verde da casa",
+            foto: "/cardapio/aneis.jpg",
+            alt: "Cestinha de anéis de cebola empanados com um potinho de maionese verde",
+          },
+          { nome: "Fritas tradicionais" },
+          { nome: "Dadinho de batata com provolone" },
+          { nome: "Batata rústica" },
+          { nome: "Meia porção", descricao: "Pra quem quer só beliscar" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "shakes",
+    rotulo: "Shakes",
+    titulo: "Milkshakes",
+    intro: "Nove sabores, todos de 400 ml. E sim, tem de bacon.",
+    grupos: [
+      {
+        itens: [
+          { nome: "Morango" },
+          { nome: "Chocolate" },
+          { nome: "Bacon" },
+          { nome: "Cheesecake de frutas vermelhas" },
+          { nome: "Caramelo salgado" },
+          { nome: "Torta de limão" },
+          { nome: "Ninho com Nutella" },
+          { nome: "Ovomaltine" },
+          { nome: "Paçoca" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "bebidas",
+    rotulo: "Drinks e bebidas",
+    titulo: "Pra acompanhar",
+    intro: "Drink com Jack e com gin, soda italiana, suco de fruta e longneck.",
+    grupos: [
+      {
+        titulo: "Drinks",
+        itens: [
+          { nome: "It's Green", descricao: "Vodka, limão e açúcar" },
+          { nome: "It's Purple", descricao: "Vodka, açaí e morango" },
+          { nome: "Jack Lemonade", descricao: "Jack Daniel's, xarope de limão siciliano e citrus" },
+          { nome: "Maracujack", descricao: "Jack Daniel's, xarope de maracujá com gengibre e citrus" },
+          { nome: "Atômica", descricao: "Gin, tônica, xarope de maracujá com limão siciliano e pimenta rosa" },
+          { nome: "Tan Tônica", descricao: "Gin, tônica e xarope de tangerina com grenadine" },
+        ],
+      },
+      {
+        titulo: "Soda italiana",
+        itens: [
+          { nome: "Maçã verde" },
+          { nome: "Cranberry" },
+          { nome: "Maracujá" },
+          { nome: "Frutas vermelhas" },
+          { nome: "Grenadine" },
+          { nome: "Limão siciliano" },
+          { nome: "Tangerina" },
+        ],
+      },
+      {
+        titulo: "Bebidas",
+        itens: [
+          { nome: "Água", descricao: "Com e sem gás" },
+          { nome: "Energético" },
+          {
+            nome: "Refrigerante lata",
+            descricao: "Pepsi, Coca-Cola, Coca-Cola Zero, Soda, Guaraná, Guaraná Zero, Fanta e água tônica",
+          },
+          { nome: "Itubaína" },
+          {
+            nome: "Suco",
+            descricao: "1 ou 2 frutas: laranja, morango, caju, maracujá, acerola, abacaxi e abacaxi com hortelã",
+          },
+          { nome: "Suco com leite condensado", descricao: "Água, gelo, fruta e leite condensado" },
+          { nome: "Longneck", descricao: "Budweiser e Eisenbahn" },
+          { nome: "Heineken", descricao: "Longneck" },
+          {
+            nome: "Chá gelado",
+            descricao: "Tradicional, pêssego, limão siciliano, cranberry, frutas vermelhas e grenadine",
+          },
+        ],
+      },
+    ],
+  },
+];
+
+/** Atalho para quem precisa só dos burguers (dados estruturados, transição). */
+export const BURGUERS = CARDAPIO[0].grupos[0].itens;

@@ -23,11 +23,14 @@ const numeroDe = (slug: string) =>
  * ele fica numa coluna à direita do texto — esticar um vídeo em pé numa tela
  * deitada cortaria metade do lanche.
  *
- * Por enquanto dissolve uma foto na outra. Quando o vídeo do Flow chegar, ele
- * entra em TRANSICAO.video e esta seção passa a fazer scrub como o hero.
+ * Com o vídeo do Flow em TRANSICAO.video, a seção faz scrub como o hero: os
+ * dois lanches deslizam inteiros conforme o scroll. Sem vídeo, cai na
+ * dissolução entre as duas fotos.
  */
 export default function Transicao() {
   const trilhoRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const alvoRef = useRef(0);
   const [progresso, setProgresso] = useState(0);
 
   useEffect(() => {
@@ -40,9 +43,10 @@ export default function Transicao() {
       frame = requestAnimationFrame(() => {
         const percorrivel = trilho.offsetHeight - window.innerHeight;
         const rolado = -trilho.getBoundingClientRect().top;
-        setProgresso(
-          percorrivel > 0 ? Math.min(1, Math.max(0, rolado / percorrivel)) : 0,
-        );
+        const p =
+          percorrivel > 0 ? Math.min(1, Math.max(0, rolado / percorrivel)) : 0;
+        alvoRef.current = p;
+        setProgresso(p);
       });
     };
 
@@ -53,6 +57,48 @@ export default function Transicao() {
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", medir);
       window.removeEventListener("resize", medir);
+    };
+  }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !TRANSICAO.video) return;
+    video.src = TRANSICAO.video;
+    video.load();
+
+    const acordar = () => {
+      const p = video.play();
+      if (p && typeof p.then === "function") p.then(() => video.pause()).catch(() => {});
+      else video.pause();
+    };
+    acordar();
+
+    let atual = 0;
+    let frame = 0;
+    let vivo = true;
+    const laco = () => {
+      if (!vivo) return;
+      atual += (alvoRef.current - atual) * 0.12;
+      const d = video.duration;
+      if (Number.isFinite(d) && d > 0) {
+        const t = atual * d;
+        if (!video.seeking && Math.abs(video.currentTime - t) > 1 / 48) {
+          video.currentTime = t;
+        }
+      }
+      frame = requestAnimationFrame(laco);
+    };
+    const comecar = () => {
+      atual = alvoRef.current;
+      frame = requestAnimationFrame(laco);
+    };
+    if (video.readyState >= 2) comecar();
+    else video.addEventListener("loadeddata", comecar, { once: true });
+
+    return () => {
+      vivo = false;
+      cancelAnimationFrame(frame);
+      video.removeEventListener("loadeddata", comecar);
     };
   }, []);
 
@@ -82,7 +128,19 @@ export default function Transicao() {
         <div className="relative mx-auto h-full max-w-6xl md:px-6">
           {/* Quadro 9:16 — tela cheia no celular, coluna à direita no computador. */}
           <div className="absolute inset-0 md:inset-auto md:right-6 md:top-[53%] md:aspect-[9/16] md:h-[74svh] md:-translate-y-1/2 md:overflow-hidden md:rounded-sm">
-            {lados.map((lado) => (
+            {TRANSICAO.video ? (
+              <video
+                ref={videoRef}
+                className="absolute inset-0 h-full w-full object-cover"
+                poster={TRANSICAO.poster}
+                preload="auto"
+                muted
+                playsInline
+                disablePictureInPicture
+                tabIndex={-1}
+                aria-label={`${TRANSICAO.inicio.alt}, que desliza para fora enquanto entra o ${TRANSICAO.fim.alt}`}
+              />
+            ) : lados.map((lado) => (
               <Image
                 key={lado.slug}
                 src={lado.foto}

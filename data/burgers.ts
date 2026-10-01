@@ -179,8 +179,9 @@ export const RESTO: { nome: string; ingredientes: string }[] = [
  * Seção de transição: um lanche vira o outro conforme o scroll, num quadro
  * vertical (9:16) — o formato em que o vídeo do Flow vai ser gerado.
  *
- * Enquanto o vídeo não existe, a seção dissolve uma foto na outra. Quando ele
- * chegar, entra em `video` e a seção passa a fazer scrub como o hero.
+ * O vídeo saiu do Flow em 1080x1920 e foi reduzido para 720x1280 com keyframe a
+ * cada 6 quadros — mesma receita do hero, para o scrub não engasgar. Sem ele, a
+ * seção volta a dissolver uma foto na outra.
  *
  * PRECISA DE CONFIRMAÇÃO: a foto inicial foi lida como Burguer 14 pela
  * montagem — pão de gergelim, manjericão, tomate grelhado, duas carnes e o
@@ -190,7 +191,8 @@ export const RESTO: { nome: string; ingredientes: string }[] = [
 export const TRANSICAO = {
   titulo: "Muda o pão, muda o número.",
   texto: "Mesma chapa, mesmo balcão. Troca o pão, troca o recheio — e o 14 vira o 7.",
-  video: undefined as string | undefined,
+  video: "/transicao/14-para-7.mp4" as string | undefined,
+  poster: "/transicao/poster.webp",
   inicio: {
     slug: "burguer-14",
     foto: "/cardapio/empanado.jpg",

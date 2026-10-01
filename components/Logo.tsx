@@ -1,22 +1,30 @@
+import Image from "next/image";
 import { CASA } from "@/data/burgers";
 
 /**
- * Marca em serifa alta, letras bem espaçadas. Uma letra sai na cor de brasa —
- * é o único ponto de cor da marca, e é ela que assina.
+ * O logotipo real da casa. Antes isto era uma reconstrução em serifa — servia
+ * enquanto não existia o original, e não serve mais.
+ *
+ * É `<Image>` e não `<img>` para o Next servir AVIF/WebP e o tamanho certo para
+ * cada tela, e vem com `alt` de verdade: a versão anterior usava `aria-label`
+ * num `<span>`, o que é proibido e falhava na auditoria de acessibilidade.
  */
-export default function Logo({ className = "" }: { className?: string }) {
-  const { antes, destaque, depois } = CASA.marca;
-
+export default function Logo({
+  className = "",
+  prioridade = false,
+}: {
+  className?: string;
+  prioridade?: boolean;
+}) {
   return (
-    <span
-      className={`titulo-vitrine tracking-[0.24em] select-none ${className}`}
-      aria-label={CASA.nomeCompleto}
-    >
-      <span aria-hidden>{antes}</span>
-      <span aria-hidden className="text-[var(--color-brasa)]">
-        {destaque}
-      </span>
-      <span aria-hidden>{depois}</span>
-    </span>
+    <Image
+      src="/marca/me-poupa.png"
+      alt={`${CASA.nomeCompleto} — ${CASA.assinaturaDaMarca}`}
+      width={1570}
+      height={845}
+      priority={prioridade}
+      sizes="(min-width: 768px) 200px, 150px"
+      className={`h-auto w-auto select-none ${className}`}
+    />
   );
 }

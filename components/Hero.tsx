@@ -217,7 +217,7 @@ export default function Hero() {
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          poster="/hero/poster-start.jpg"
+          poster="/hero/poster-start.webp"
           preload="auto"
           muted
           playsInline
@@ -266,7 +266,7 @@ export default function Hero() {
                   }}
                 >
                   <span
-                    className={`text-[11px] whitespace-nowrap uppercase tracking-[0.18em] text-[var(--color-creme)] ${
+                    className={`text-xs whitespace-nowrap uppercase tracking-[0.18em] text-[var(--color-creme)] ${
                       esquerda ? "text-right" : "text-left"
                     }`}
                   >
@@ -308,7 +308,7 @@ export default function Hero() {
               <h1 className="titulo-vitrine max-w-2xl text-balance text-[clamp(1.5rem,3vw,2.5rem)] leading-tight">
                 {CASA.manchete}
               </h1>
-              <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-[var(--color-fumaca)]">
+              <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[var(--color-fumaca)]">
                 Na tela: {DESTAQUE}
               </p>
             </div>

@@ -1,12 +1,11 @@
+import Image from "next/image";
 import { DESTAQUES, RESTO } from "@/data/burgers";
 
 /**
  * Cardápio em blocos: foto grande de um lado, texto do outro, colados.
  *
- * A versão anterior era só tipografia espalhada pela tela — cada elemento
- * respirava tanto que nada parecia pertencer a nada, e batia o olho sem
- * vontade de ler. Aqui a foto encosta no texto, os ingredientes viram etiquetas
- * em linha logo abaixo da descrição, e o bloco inteiro se lê de uma vez.
+ * As fotos agora são as que a casa mandou, e passam pelo `<Image>` do Next, que
+ * entrega AVIF/WebP no tamanho certo para cada tela em vez de um JPEG único.
  */
 export default function Cardapio() {
   return (
@@ -25,15 +24,16 @@ export default function Cardapio() {
                 fotoNaDireita ? "md:order-2" : ""
               }`}
             >
-              <picture>
-                <source srcSet={`${item.foto}.webp`} type="image/webp" />
-                <img
-                  src={`${item.foto}.jpg`}
-                  alt={item.alt}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              </picture>
+              <Image
+                src={item.foto}
+                alt={item.alt}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+                // A primeira foto entra no primeiro quadro em tela grande; as
+                // outras só quando o scroll chega perto.
+                priority={i === 0}
+              />
               <div
                 aria-hidden
                 className={`absolute inset-0 bg-gradient-to-t from-[var(--color-carvao)] via-transparent to-transparent md:bg-gradient-to-r ${
@@ -61,7 +61,7 @@ export default function Cardapio() {
                       aria-hidden
                       className="titulo-vitrine text-[clamp(3.5rem,7vw,6rem)] leading-none text-[var(--color-brasa)]"
                     >
-                      <span className="text-[0.35em] align-super">R$</span>
+                      <span className="align-super text-[0.35em]">R$</span>
                       {item.preco}
                     </span>
                   )}
@@ -78,7 +78,7 @@ export default function Cardapio() {
                   {item.ingredientes.map((ingrediente) => (
                     <li
                       key={ingrediente}
-                      className="rounded-full border border-[var(--color-creme)]/15 px-3 py-1.5 text-[11px] uppercase tracking-[0.12em] text-[var(--color-fumaca)]"
+                      className="rounded-full border border-[var(--color-creme)]/15 px-3 py-1.5 text-xs uppercase tracking-[0.1em] text-[var(--color-fumaca)]"
                     >
                       {ingrediente}
                     </li>
@@ -113,7 +113,7 @@ function RestoDoCardapio() {
               <span className="shrink-0 text-base text-[var(--color-creme)]">
                 {item.nome}
               </span>
-              <span className="text-right text-[11px] uppercase tracking-[0.12em] text-[var(--color-fumaca)]">
+              <span className="text-right text-xs uppercase tracking-[0.1em] text-[var(--color-fumaca)]">
                 {item.ingredientes}
               </span>
             </li>

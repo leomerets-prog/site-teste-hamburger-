@@ -6,7 +6,9 @@
   --color-carvao-claro: #141416;
   --color-fumaca: #8a8a90;
   --color-creme: #f2ede4;
-  --color-brasa: #e8873a;
+  /* Amarelo medido no logotipo que a casa mandou. Era #e8873a, um âmbar que eu
+     tinha escolhido sem conhecer a marca; este é o da marca registrada. */
+  --color-brasa: #fdc403;
 
   --font-titulo: var(--fonte-serifa), Georgia, serif;
   --font-corpo: var(--fonte-sans), system-ui, sans-serif;

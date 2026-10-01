@@ -20,7 +20,7 @@ export default function CamadasMobile() {
             key={camada.nome}
             className="flex items-baseline gap-4 border-b border-[var(--color-carvao-claro)] py-4 last:border-b-0"
           >
-            <span className="w-6 shrink-0 text-[11px] tracking-[0.18em] text-[var(--color-brasa)]">
+            <span className="w-6 shrink-0 text-xs tracking-[0.18em] text-[var(--color-brasa)]">
               {String(i + 1).padStart(2, "0")}
             </span>
             <span className="text-base text-[var(--color-creme)]">

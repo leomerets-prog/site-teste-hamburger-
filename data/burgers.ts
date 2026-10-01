@@ -47,12 +47,16 @@ export const CAMADAS: Ingrediente[] = [
 export const PILHA = { esquerda: 37, direita: 64 };
 
 /**
- * A marca sai em dois tons: "ME" em creme e "POUPA" em brasa — é o tratamento
- * que a própria casa usa nas peças do Instagram.
+ * A marca agora é o logotipo real da casa, em `public/marca/me-poupa.png`,
+ * extraído do perfil deles. Antes era uma reconstrução em serifa — boa como
+ * provisório, errada agora que existe o original.
+ *
+ * O amarelo #FDC403 foi medido no próprio arquivo e virou a cor de destaque do
+ * site inteiro, no lugar do âmbar que eu tinha escolhido no escuro.
  */
 export const CASA = {
-  marca: { antes: "ME ", destaque: "POUPA", depois: "" },
   nomeCompleto: "Me Poupa",
+  assinaturaDaMarca: "Burgers & Shakes",
   cidade: "Poços de Caldas, MG",
   endereco: "Rua Santa Catarina, 271",
   horario: "De segunda a sábado, a partir das 18h",
@@ -80,8 +84,9 @@ export const DESTAQUE = "Burguer do Palhaço";
  * apresentá-los em lista. Quando a casa mandar mais fotos, cada item promovido
  * para cá é uma entrada nova nesta lista.
  *
- * PRECISA DE CONFIRMAÇÃO: a foto de `burguer-14.jpg` foi associada ao Burguer 14
- * pelo empanado visível, mas isso é leitura da imagem, não informação da casa.
+ * As fotos são as que a própria casa mandou. A do Burguer 14 confirma a leitura
+ * que antes era só palpite: aparecem o tomate grelhado e o manjericão que o
+ * cardápio lista, além do empanado.
  */
 export const DESTAQUES: Destaque[] = [
   {
@@ -96,8 +101,8 @@ export const DESTAQUES: Destaque[] = [
       "Anéis de cebola empanados",
       "Cheddar fatiado",
     ],
-    foto: "/cardapio/burguer-7",
-    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon",
+    foto: "/cardapio/burguer-7.jpg",
+    alt: "Burguer 7 com anéis de cebola empanados, cheddar derretido e bacon no pão escuro",
   },
   {
     slug: "burguer-14",
@@ -111,8 +116,8 @@ export const DESTAQUES: Destaque[] = [
       "Tomate grelhado",
       "Manjericão",
     ],
-    foto: "/cardapio/burguer-14",
-    alt: "Burguer 14 com queijo empanado, carne e bacon no pão de gergelim",
+    foto: "/cardapio/burguer-14.jpg",
+    alt: "Burguer 14 segurado com as duas mãos: queijo canastra empanado, tomate grelhado e manjericão",
   },
   {
     slug: "rodizio",
@@ -121,7 +126,7 @@ export const DESTAQUES: Destaque[] = [
     chamada:
       "Era só no fim de semana. Agora é todo dia. Criança até 5 anos não paga, de 6 a 11 paga meia.",
     ingredientes: ["Rodízio de burguers", "Todos os dias", "Reserva pelo Direct"],
-    foto: "/cardapio/rodizio",
+    foto: "/cardapio/rodizio.jpg",
     alt: "Vários mini burguers com cheddar servidos no prato do rodízio",
   },
 ];

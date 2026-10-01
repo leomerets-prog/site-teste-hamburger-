@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CAMADAS, CASA, DESTAQUE, PILHA } from "@/data/burgers";
+import { ArrowUpRight } from "./Icones";
 
 /** Altura de rolagem do hero. Quanto maior, mais devagar a montagem acontece. */
-const TELAS_DE_SCROLL = 6;
+const TELAS_DE_SCROLL = 3;
 
 /** No celular o trilho encurta: decodificar custa mais e a paciência é menor. */
-const TELAS_NO_CELULAR = 4;
+const TELAS_NO_CELULAR = 2.5;
 
 /** Ponto do scrub em que as legendas já saíram de cena. */
 const FIM_DAS_LEGENDAS = 0.42;
@@ -28,10 +29,10 @@ type Caixa = {
 };
 
 /** Altura, no rodapé do hero, reservada para o nome do lanche. */
-const FAIXA_DO_TITULO = 96;
+const FAIXA_DO_TITULO = 180;
 
 /** Altura, no topo, reservada para a marca e o menu. */
-const FAIXA_DO_CABECALHO = 72;
+const FAIXA_DO_CABECALHO = 110;
 
 export default function Hero() {
   const trilhoRef = useRef<HTMLDivElement>(null);
@@ -41,6 +42,7 @@ export default function Hero() {
   const [pronto, setPronto] = useState(false);
   const [caixa, setCaixa] = useState<Caixa | null>(null);
   const [telas, setTelas] = useState(TELAS_DE_SCROLL);
+  const [estatico, setEstatico] = useState(false);
 
   // A escolha do arquivo é feita aqui, e não com <source media="...">: navegadores
   // ignoram o atributo `media` dentro de <video>, e o resultado era o celular
@@ -55,10 +57,17 @@ export default function Hero() {
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
 
+    // Static fallback also avoids the video download for reduced motion.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.poster = "/hero/poster-end.jpg";
+      setEstatico(true);
+      return;
+    }
+
     video.src = grande ? "/hero/hero-1080.mp4" : "/hero/hero-720.mp4";
     video.load();
 
-    // No celular o trilho é mais curto. Seis telas de rolagem num aparelho onde
+    // No celular o trilho é mais curto. Muitas telas de rolagem num aparelho onde
     // cada quadro custa mais para decodificar viram uma travessia longa demais.
     if (!grande) setTelas(TELAS_NO_CELULAR);
 
@@ -94,12 +103,17 @@ export default function Hero() {
     const medir = () => {
       const { width: W, height: H } = palco.getBoundingClientRect();
       if (!W || !H) return;
-      // object-cover: o quadro cresce até cobrir os dois eixos.
-      const altura = Math.max(W / PROPORCAO, H);
+      // Measure the visible video area after reserving space for the header.
+      const midia = videoRef.current?.getBoundingClientRect();
+      const alturaMidia = midia?.height || H;
+      const topoMidia = midia
+        ? midia.top - palco.getBoundingClientRect().top
+        : 0;
+      const altura = Math.max(W / PROPORCAO, alturaMidia);
       const largura = altura * PROPORCAO;
       setCaixa({
         x: (W - largura) / 2,
-        y: (H - altura) / 2,
+        y: topoMidia + (alturaMidia - altura) / 2,
         largura,
         altura,
         palco: H,
@@ -155,7 +169,10 @@ export default function Hero() {
         // imagem. Antes o limite era 0,01s, quase quatro pedidos por quadro
         // exibido: três deles não mudavam nada na tela e ainda assim custavam
         // uma decodificação cada.
-        if (!video.seeking && Math.abs(video.currentTime - tempo) > MEIO_QUADRO) {
+        if (
+          !video.seeking &&
+          Math.abs(video.currentTime - tempo) > MEIO_QUADRO
+        ) {
           video.currentTime = tempo;
         }
       }
@@ -202,11 +219,11 @@ export default function Hero() {
       ref={trilhoRef}
       aria-label={`${DESTAQUE} sendo montado camada por camada`}
       style={{ height: `${telas * 100}svh` }}
-      className="relative"
+      className="relative hero-rail"
     >
       <div
         ref={palcoRef}
-        className="sticky top-0 h-svh w-full overflow-hidden bg-[var(--color-carvao)]"
+        className="hero-stage sticky top-0 h-svh w-full overflow-hidden bg-[#0a0a0b]"
       >
         {/*
           O vídeo sangra a tela inteira. A caixa 16:9 exata que existia aqui
@@ -216,17 +233,23 @@ export default function Hero() {
         */}
         <video
           ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="hero-video absolute w-full object-cover"
           poster="/hero/poster-start.jpg"
           preload="auto"
           muted
           playsInline
           disablePictureInPicture
           tabIndex={-1}
+          onError={() => {
+            setEstatico(true);
+            setTelas(1);
+            if (videoRef.current)
+              videoRef.current.poster = "/hero/poster-end.jpg";
+          }}
         />
 
         {/* Legendas — só no desktop, onde sobra espaço lateral. */}
-        {caixa && (
+        {caixa && !estatico && (
           <div
             className="pointer-events-none absolute inset-0 hidden md:block"
             aria-hidden
@@ -275,7 +298,9 @@ export default function Hero() {
                   <span
                     className="h-px w-[clamp(2rem,6vw,6rem)] shrink-0 bg-[var(--color-creme)]/50"
                     style={{
-                      transformOrigin: esquerda ? "right center" : "left center",
+                      transformOrigin: esquerda
+                        ? "right center"
+                        : "left center",
                       animation: pronto
                         ? `desenhar-linha 700ms ${
                             300 + i * 90
@@ -291,58 +316,45 @@ export default function Hero() {
           </div>
         )}
 
-        {/*
-          Rodapé do hero. O nome do lanche fica no canto, fora do caminho da
-          pilha — sobreposto ao hambúrguer ele lia como se estivesse na frente.
-        */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--color-carvao)] via-[var(--color-carvao)]/85 to-transparent pt-28 pb-8">
-          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="hero-footer">
+          <div className="hero-footer-inner wrap">
             <div>
-              {/*
-                A manchete vem antes do nome do lanche porque é ela que segura
-                quem chegou: diz em uma linha o que essa casa tem de próprio.
-                O nome do lanche entra como legenda do que está na tela.
-              */}
-              {/* text-balance reparte as duas linhas com pesos parecidos, em vez
-                  de deixar "o seu." sozinho embaixo. */}
-              <h1 className="titulo-vitrine max-w-2xl text-balance text-[clamp(1.5rem,3vw,2.5rem)] leading-tight">
-                {CASA.manchete}
-              </h1>
-              <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-[var(--color-fumaca)]">
-                Na tela: {DESTAQUE}
+              <p className="hero-kicker">ME POUPA · BURGERS & SHAKES</p>
+              <h1 className="titulo-vitrine hero-title">{CASA.manchete}</h1>
+              <p className="hero-caption">
+                Animação ilustrativa. Os sabores da casa estão logo abaixo.
               </p>
             </div>
-
-            {/*
-              Convite a rolar. Antes era `hidden sm:flex`, ou seja: não aparecia
-              em celular nenhum, justo onde a rolagem é a única forma de navegar.
-              Agora aparece sempre, como etiqueta com borda em brasa — texto
-              cinza e pequeno sumia contra a foto.
-            */}
-            <div
-              className="flex w-full shrink-0 items-center justify-center gap-3 rounded-full border border-[var(--color-brasa)]/45 bg-[var(--color-carvao)]/70 px-5 py-3 backdrop-blur-sm sm:w-auto"
-              style={{ opacity: forcaConvite }}
-            >
-              <span className="text-[12px] font-medium uppercase tracking-[0.28em] text-[var(--color-brasa)]">
-                role para montar
-              </span>
-              <svg
-                width="14"
-                height="22"
-                viewBox="0 0 14 22"
-                fill="none"
-                aria-hidden
-                className="shrink-0 text-[var(--color-brasa)]"
-                style={{ animation: "seta-desce 1.8s ease-in-out infinite" }}
-              >
-                <path
-                  d="M7 1v18M1.5 14l5.5 5.5L12.5 14"
-                  stroke="currentColor"
-                  strokeWidth="1.75"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="hero-actions">
+              <a href="#cardapio" className="button button-yellow">
+                Conhecer os sabores <ArrowUpRight />
+              </a>
+              {!estatico && (
+                <div
+                  className="scroll-invite"
+                  style={{ opacity: forcaConvite }}
+                >
+                  <span>Role para montar</span>
+                  <svg
+                    width="14"
+                    height="22"
+                    viewBox="0 0 14 22"
+                    fill="none"
+                    aria-hidden="true"
+                    style={{
+                      animation: "seta-desce 1.8s ease-in-out infinite",
+                    }}
+                  >
+                    <path
+                      d="M7 1v18M1.5 14l5.5 5.5L12.5 14"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
           </div>
         </div>

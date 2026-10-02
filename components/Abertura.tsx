@@ -50,6 +50,15 @@ export default function Abertura() {
 
   // Se a animação terminar antes de o React acordar (rede lenta, movimento
   // reduzido), o onAnimationEnd nunca chega. O relógio garante a saída.
+  // A abertura sempre revela o topo. Sem isto, o navegador devolvia a
+  // posição da visita anterior (ou pulava para um #cardapio que ficou na URL)
+  // e a cortina subia no meio da página.
+  useEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setVisivel(false), 2200);
     return () => clearTimeout(t);

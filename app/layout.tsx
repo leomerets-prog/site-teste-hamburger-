@@ -20,7 +20,7 @@ const corpo = Inter({
 });
 
 const DESCRICAO =
-  "Catorze burguers numerados, o do Palhaço e rodízio todo dia por R$ 99,99. Rua Santa Catarina, 271, Poços de Caldas.";
+  "Catorze burguers numerados, o do Palhaço e rodízio todo dia por R$ 79,90. Rua Santa Catarina, 271, Poços de Caldas.";
 
 /**
  * O title é o que aparece na aba e no Google; a description é o que aparece

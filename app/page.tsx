@@ -1,4 +1,5 @@
 import Abertura from "@/components/Abertura";
+import BotaoWhatsapp from "@/components/BotaoWhatsapp";
 import Cabecalho from "@/components/Cabecalho";
 import Cardapio from "@/components/Cardapio";
 import DadosEstruturados from "@/components/DadosEstruturados";
@@ -22,6 +23,7 @@ export default function Home() {
         <Rodizio />
       </main>
       <Rodape />
+      <BotaoWhatsapp />
     </>
   );
 }

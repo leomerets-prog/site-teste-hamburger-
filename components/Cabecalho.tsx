@@ -33,12 +33,12 @@ export default function Cabecalho() {
             </a>
           ))}
           <a
-            href={CASA.instagram}
+            href={CASA.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-[var(--color-amarelo)] px-4 py-2.5 text-sm font-bold text-[var(--color-preto)] transition-transform hover:-translate-y-0.5"
           >
-            {CASA.arroba}
+            Pedir no WhatsApp
           </a>
         </div>
       </nav>

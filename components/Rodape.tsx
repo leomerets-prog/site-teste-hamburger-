@@ -42,6 +42,14 @@ export default function Rodape() {
           >
             {CASA.arroba}
           </a>
+          <a
+            href={CASA.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="titulo text-3xl underline decoration-[3px] underline-offset-4 hover:no-underline"
+          >
+            WhatsApp
+          </a>
           <p className="text-sm font-medium">Contém amor. E cheddar.</p>
         </div>
       </div>

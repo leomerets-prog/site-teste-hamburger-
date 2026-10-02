@@ -36,7 +36,7 @@ export default function Rodizio() {
 
         <div className="order-1 md:order-2">
           <p className="inline-block -rotate-2 rounded-md bg-[var(--color-ketchup)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-white">
-            Segunda a sábado
+            {RODIZIO.quando}
           </p>
           <h2 id="rodizio-titulo" className="titulo mt-4 text-[clamp(3rem,8vw,6rem)] text-[var(--color-amarelo)]">
             {RODIZIO.titulo}
@@ -53,7 +53,7 @@ export default function Rodizio() {
           </ul>
 
           <a
-            href={CASA.instagram}
+            href={CASA.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-10 inline-flex items-center rounded-full bg-[var(--color-amarelo)] px-7 py-4 text-base font-bold text-[var(--color-preto)] transition-transform hover:-translate-y-0.5"

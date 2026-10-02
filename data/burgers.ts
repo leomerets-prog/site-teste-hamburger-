@@ -50,6 +50,8 @@ export const CASA = {
   horario: "Segunda a sábado, a partir das 18h",
   instagram: "https://www.instagram.com/mepoupaoficial/",
   arroba: "@mepoupaoficial",
+  /** Link oficial de WhatsApp, passado pela casa. */
+  whatsapp: "https://wa.me/message/QE3NTBFHKBPTO1",
 
   /**
    * PRECISA DE CONFIRMAÇÃO: a casa se apresenta assim na bio do Instagram, mas
@@ -129,8 +131,9 @@ export const RODIZIO = {
   texto:
     "Era só no fim de semana. Agora é todo dia. Burger saindo da chapa até você pedir arrego.",
   regras: ["Criança até 5 anos não paga", "De 6 a 11 anos paga meia", "Valor pode mudar em feriados"],
-  /** A casa não divulga reserva — o botão só leva pra conversa. */
-  botao: "Chamar no Instagram",
+  /** Confirmado: este mês o rodízio vale em todo dia de funcionamento. */
+  quando: "Todo dia que a casa abre",
+  botao: "Chamar no WhatsApp",
   foto: "/cardapio/rodizio.jpg",
   alt: "Vários mini burguers com cheddar no prato do rodízio",
 };

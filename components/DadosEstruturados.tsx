@@ -1,4 +1,5 @@
 import { CARDAPIO, CASA } from "@/data/burgers";
+import { SITE_CONFIG } from "@/data/site.config";
 import { SITE } from "@/lib/site";
 
 /**
@@ -15,33 +16,25 @@ export default function DadosEstruturados() {
     "@context": "https://schema.org",
     "@type": "Restaurant",
     name: `${CASA.nomeCompleto} ${CASA.assinaturaDaMarca}`,
-    description:
-      "Hamburgueria em Poços de Caldas com catorze burguers numerados, o Burguer do Palhaço, shakes de 400 ml e rodízio todos os dias.",
+    description: SITE_CONFIG.seo.descricaoEstruturada,
     url: SITE,
-    image: [`${SITE}/opengraph-image.jpg`],
-    logo: `${SITE}/marca/me-poupa.png`,
-    servesCuisine: ["Hambúrguer", "Hot dog", "Milkshake"],
+    image: [`${SITE}${SITE_CONFIG.midia.imagemCompartilhamento}`],
+    logo: `${SITE}${SITE_CONFIG.midia.logo}`,
+    servesCuisine: [...SITE_CONFIG.seo.culinaria],
     address: {
       "@type": "PostalAddress",
       streetAddress: CASA.endereco,
-      addressLocality: "Poços de Caldas",
-      addressRegion: "MG",
-      addressCountry: "BR",
+      addressLocality: SITE_CONFIG.local.cidade,
+      addressRegion: SITE_CONFIG.local.estado,
+      addressCountry: SITE_CONFIG.local.pais,
     },
     // A casa divulga o horário de abertura, mas não o de fechamento — por isso
     // só `opens`. Com o horário de fechar confirmado, isto fica completo.
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ],
-        opens: "18:00",
+        dayOfWeek: [...SITE_CONFIG.atendimento.diasSchema],
+        opens: SITE_CONFIG.atendimento.abreAs,
       },
     ],
     hasMenu: {
@@ -57,6 +50,9 @@ export default function DadosEstruturados() {
             name: item.nome,
             ...(item.descricao && { description: item.descricao }),
             ...(item.foto && { image: `${SITE}${item.foto}` }),
+            ...(item.preco && {
+              offers: { "@type": "Offer", priceCurrency: "BRL", price: item.preco.replace(/[^0-9,]/g, "").replace(",", ".") },
+            }),
           })),
         ),
       })),

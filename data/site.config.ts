@@ -32,7 +32,7 @@ export const SITE_CONFIG = {
   },
   seo: {
     descricao:
-      "Catorze burguers numerados, o do Palhaço e rodízio todo dia por R$ 99,99. Rua Santa Catarina, 271, Poços de Caldas.",
+      "Catorze burguers numerados, o do Palhaço e rodízio todo dia por R$ 79,90. Rua Santa Catarina, 271, Poços de Caldas.",
     descricaoEstruturada:
       "Hamburgueria em Poços de Caldas com catorze burguers numerados, o Burguer do Palhaço, shakes de 400 ml e rodízio todos os dias.",
     palavrasChave: [

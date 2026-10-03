@@ -74,7 +74,7 @@ export const HERO = {
   texto:
     "São 14 burguers numerados, mais o do Palhaço e o Kids. É só falar o número. E, se a fome for das grandes, tem rodízio todo dia.",
   botaoCardapio: "Ver o cardápio",
-  botaoRodizio: "Rodízio R$ 99,99",
+  botaoRodizio: "Rodízio R$ 79,90",
 };
 
 /**
@@ -130,8 +130,8 @@ export const TRANSICAO = {
 
 export const RODIZIO = {
   titulo: "Rodízio todo dia",
-  preco: "99,99",
-  /** Do post da própria casa — que avisa que preço muda em feriado. */
+  preco: "79,90",
+  /** Valor anterior do site; a casa avisa que pode mudar em feriados. */
   texto:
     "Era só no fim de semana. Agora é todo dia. Burger saindo da chapa até você pedir arrego.",
   regras: ["Criança até 5 anos não paga", "De 6 a 11 anos paga meia", "Valor pode mudar em feriados"],

@@ -10,8 +10,9 @@ Revisado em 2 de outubro de 2026 para a demonstração do site.
 - Atendimento divulgado: segunda a sábado, a partir das 18h
 - WhatsApp divulgado no perfil: `https://wa.me/message/QE3NTBFHKBPTO1`
 - Pedido online divulgado: `https://pedido.brendi.com.br/me-poupa-ou-carlota-joaquina`
-- Uma arte publicada no perfil anuncia rodízio por R$ 99,99. O preço pode variar
-  por data; confirmar com a casa antes de publicar como oferta atual.
+- A arte consultada no perfil anunciava rodízio por R$ 99,99, mas o responsável
+  pela casa corrigiu essa informação. A demonstração usa R$ 79,90, valor que já
+  aparecia no site anterior; confirmar o preço atual com a casa antes de publicar.
 - A identidade visual usa amarelo, preto e branco, com lettering manual e
   tipografia condensada. O logo de alta resolução já fornecido ao projeto foi
   mantido.

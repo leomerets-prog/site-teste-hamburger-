@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CAMADAS, HERO, PILHA } from "@/data/burgers";
+import { SITE_CONFIG } from "@/data/site.config";
 
 /** Proporção do vídeo do hero. */
 const PROPORCAO = 16 / 9;
@@ -46,7 +47,9 @@ export default function Hero() {
     const video = videoRef.current;
     if (!video) return;
     const grande = window.matchMedia("(min-width: 768px)").matches;
-    video.src = grande ? "/hero/hero-loop-1080.mp4" : "/hero/hero-loop-720.mp4";
+    video.src = grande
+      ? SITE_CONFIG.midia.hero.videoDesktop
+      : SITE_CONFIG.midia.hero.videoMobile;
     video.load();
     video.play().catch(() => {});
 
@@ -107,7 +110,7 @@ export default function Hero() {
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          poster="/hero/poster-start.webp"
+          poster={SITE_CONFIG.midia.hero.poster}
           autoPlay
           loop
           muted

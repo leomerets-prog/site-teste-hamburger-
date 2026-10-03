@@ -1,3 +1,5 @@
+import { SITE_CONFIG } from "./site.config";
+
 /*
  * Tudo que é texto e dado do site mora aqui. Trocar de casa, de lanche ou de
  * frase é mexer neste arquivo — os componentes só desenham.
@@ -22,6 +24,8 @@ export type Item = {
   /** Composição, do jeito que está no cardápio impresso. Vazio quando o
    *  cardápio só traz o nome — melhor nada que um detalhe inventado. */
   descricao?: string;
+  /** Preco opcional, ja formatado para exibicao (ex.: "R$ 29,90"). */
+  preco?: string;
   /** Uma linha de chamada, para os itens com foto. */
   chamada?: string;
   foto?: string;
@@ -43,21 +47,21 @@ export type Aba = {
 /* ------------------------------------------------------------------ casa */
 
 export const CASA = {
-  nomeCompleto: "Me Poupa",
-  assinaturaDaMarca: "Burgers & Shakes",
-  cidade: "Poços de Caldas, MG",
-  endereco: "Rua Santa Catarina, 271",
-  horario: "Segunda a sábado, a partir das 18h",
-  instagram: "https://www.instagram.com/mepoupaoficial/",
-  arroba: "@mepoupaoficial",
+  nomeCompleto: SITE_CONFIG.marca.nome,
+  assinaturaDaMarca: SITE_CONFIG.marca.assinatura,
+  cidade: SITE_CONFIG.local.cidadeComEstado,
+  endereco: SITE_CONFIG.local.endereco,
+  horario: SITE_CONFIG.atendimento.textoCompleto,
+  instagram: SITE_CONFIG.contato.instagram,
+  arroba: SITE_CONFIG.contato.arroba,
   /** Link oficial de WhatsApp, passado pela casa. */
-  whatsapp: "https://wa.me/message/QE3NTBFHKBPTO1",
+  whatsapp: SITE_CONFIG.contato.whatsapp,
 
   /**
    * PRECISA DE CONFIRMAÇÃO: a casa se apresenta assim na bio do Instagram, mas
    * não diz qual premiação nem em que anos.
    */
-  selo: "4x melhor hamburgueria da cidade",
+  selo: SITE_CONFIG.marca.selo,
 };
 
 /* ------------------------------------------------------------------ hero */

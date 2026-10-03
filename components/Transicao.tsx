@@ -84,12 +84,12 @@ export default function Transicao() {
               poster={TRANSICAO.poster}
               onPlaying={() => setVideoTocando(true)}
               onError={() => setVideoTocando(false)}
+              aria-hidden
               loop
               muted
               playsInline
               preload="none"
               disablePictureInPicture
-              aria-label={TRANSICAO.alt}
             />
           </div>
           <span className="titulo absolute -left-4 -top-5 -rotate-6 rounded-lg bg-[var(--color-ketchup)] px-3 py-1.5 text-xl text-white shadow-md">

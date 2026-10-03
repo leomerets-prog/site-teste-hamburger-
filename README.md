@@ -25,6 +25,12 @@ primeira implementacao real do motor.
 - `app/globals.css`: estrutura visual e animacoes; as cores sao sobrescritas
   pela configuracao central.
 - `public/`: arquivos da marca e fotos dos produtos.
+- `.agents/skills/`: orientação local do projeto para qualidade React/Next.js,
+  publicação na Vercel e prospecção de comércios locais.
+- `docs/fontes-me-poupa.md`: fontes públicas consultadas e dados pendentes de
+  confirmação antes de entregar a demonstração.
+- `public/referencias-instagram/`: imagens públicas coletadas para revisão;
+  ainda não associadas a produtos específicos do cardápio.
 
 ## Estrategia de repositorios
 

@@ -131,7 +131,7 @@ export const TRANSICAO = {
 export const RODIZIO = {
   titulo: "Rodízio todo dia",
   preco: "79,90",
-  /** Do post da própria casa — que avisa que preço muda em feriado. */
+  /** Valor anterior do site; a casa avisa que pode mudar em feriados. */
   texto:
     "Era só no fim de semana. Agora é todo dia. Burger saindo da chapa até você pedir arrego.",
   regras: ["Criança até 5 anos não paga", "De 6 a 11 anos paga meia", "Valor pode mudar em feriados"],

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CASA } from "@/data/burgers";
+import { SITE_CONFIG } from "@/data/site.config";
 
 /**
  * O logotipo real da casa. Antes isto era uma reconstrução em serifa — servia
@@ -18,7 +19,7 @@ export default function Logo({
 }) {
   return (
     <Image
-      src="/marca/me-poupa.png"
+      src={SITE_CONFIG.midia.logo}
       alt={`${CASA.nomeCompleto} — ${CASA.assinaturaDaMarca}`}
       width={1570}
       height={845}

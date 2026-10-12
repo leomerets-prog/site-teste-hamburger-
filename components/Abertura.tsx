@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { SITE_CONFIG } from "@/data/site.config";
 import { useEffect, useState } from "react";
 import { CASA } from "@/data/burgers";
 
@@ -78,7 +79,7 @@ export default function Abertura() {
       <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-amarelo)]">
         <div style={{ animation: "logo-sai 1.9s cubic-bezier(.7,0,.2,1) forwards" }}>
           <Image
-            src="/marca/me-poupa.png"
+            src={SITE_CONFIG.midia.logo}
             alt={CASA.nomeCompleto}
             width={1570}
             height={845}

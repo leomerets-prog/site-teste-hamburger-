@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { TRANSICAO } from "@/data/burgers";
 
 /**
@@ -12,6 +13,7 @@ import { TRANSICAO } from "@/data/burgers";
  */
 export default function Transicao() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoTocando, setVideoTocando] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -68,16 +70,26 @@ export default function Transicao() {
             colado na parede, que é de onde esse vídeo veio. */}
         <div className="relative mx-auto w-full max-w-[320px] md:max-w-[360px]">
           <div className="relative aspect-[9/16] rotate-2 overflow-hidden rounded-[28px] border-[6px] border-[var(--color-preto)] bg-[var(--color-preto)] shadow-[10px_10px_0_var(--color-preto)]">
+            <Image
+              src={TRANSICAO.poster}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 360px, 320px"
+              className={`object-cover transition-opacity duration-300 ${videoTocando ? "opacity-0" : "opacity-100"}`}
+              aria-hidden
+            />
             <video
               ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${videoTocando ? "opacity-100" : "opacity-0"}`}
               poster={TRANSICAO.poster}
+              onPlaying={() => setVideoTocando(true)}
+              onError={() => setVideoTocando(false)}
+              aria-hidden
               loop
               muted
               playsInline
               preload="none"
               disablePictureInPicture
-              aria-label={TRANSICAO.alt}
             />
           </div>
           <span className="titulo absolute -left-4 -top-5 -rotate-6 rounded-lg bg-[var(--color-ketchup)] px-3 py-1.5 text-xl text-white shadow-md">

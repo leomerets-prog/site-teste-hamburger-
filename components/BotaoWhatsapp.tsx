@@ -24,19 +24,19 @@ export default function BotaoWhatsapp() {
       />
       <svg viewBox="0 0 48 48" className="relative h-9 w-9 md:h-10 md:w-10" aria-hidden>
         {/* pão de cima */}
-        <path d="M6 21c0-8.5 8-14 18-14s18 5.5 18 14z" fill="#0e0e0e" />
-        <g fill="#fdc403">
+        <path d="M6 21c0-8.5 8-14 18-14s18 5.5 18 14z" fill="var(--color-preto)" />
+        <g fill="var(--color-amarelo)">
           <ellipse cx="17" cy="13" rx="1.4" ry="0.9" />
           <ellipse cx="25" cy="11" rx="1.4" ry="0.9" />
           <ellipse cx="32" cy="14.5" rx="1.4" ry="0.9" />
           <ellipse cx="22" cy="16.5" rx="1.4" ry="0.9" />
         </g>
         {/* queijo escorrendo */}
-        <path d="M5 24h38l-4 3.5-3-2.5-4 4-4-4-4 4-4-4-4 4-4-4-3 2.5z" fill="#0e0e0e" />
+        <path d="M5 24h38l-4 3.5-3-2.5-4 4-4-4-4 4-4-4-4 4-4-4-3 2.5z" fill="var(--color-preto)" />
         {/* carne */}
-        <rect x="6" y="30" width="36" height="5" rx="2.5" fill="#0e0e0e" />
+        <rect x="6" y="30" width="36" height="5" rx="2.5" fill="var(--color-preto)" />
         {/* pão de baixo */}
-        <path d="M7 37.5h34c0 2.8-2.2 4.5-5 4.5H12c-2.8 0-5-1.7-5-4.5z" fill="#0e0e0e" />
+        <path d="M7 37.5h34c0 2.8-2.2 4.5-5 4.5H12c-2.8 0-5-1.7-5-4.5z" fill="var(--color-preto)" />
       </svg>
     </a>
   );

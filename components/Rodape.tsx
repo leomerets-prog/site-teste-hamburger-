@@ -1,4 +1,5 @@
 import { CASA } from "@/data/burgers";
+import { SITE_CONFIG } from "@/data/site.config";
 import Logo from "./Logo";
 
 /**
@@ -27,8 +28,8 @@ export default function Rodape() {
             </address>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.14em] opacity-70">Quando</p>
-              <p className="titulo mt-2 text-2xl">Segunda a sábado</p>
-              <p className="mt-1 font-medium">A partir das 18h</p>
+              <p className="titulo mt-2 text-2xl">{SITE_CONFIG.atendimento.resumo}</p>
+              <p className="mt-1 font-medium">{SITE_CONFIG.atendimento.detalhe}</p>
             </div>
           </div>
         </div>

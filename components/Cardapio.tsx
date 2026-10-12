@@ -97,7 +97,7 @@ function Grupo({ itens }: { itens: Item[] }) {
   const comFoto = itens.filter((i) => i.foto);
   const semFoto = itens.filter((i) => !i.foto);
 
-  if (itens.every((i) => !i.descricao && !i.foto && !i.numero)) {
+  if (itens.every((i) => !i.descricao && !i.foto && !i.numero && !i.preco)) {
     return (
       <ul className="grid gap-x-10 gap-y-4 rounded-3xl border-[3px] border-[var(--color-preto)] bg-white p-6 shadow-[6px_6px_0_var(--color-preto)] sm:grid-cols-2 md:p-8 lg:grid-cols-3">
         {itens.map((item) => (
@@ -172,6 +172,7 @@ function CardComFoto({ item }: { item: Item }) {
       </div>
       <div className="p-6">
         <h4 className="titulo text-3xl text-[var(--color-preto)] md:text-4xl">{item.nome}</h4>
+        {item.preco && <p className="titulo mt-2 text-2xl text-[var(--color-ketchup)]">{item.preco}</p>}
         {item.chamada && (
           <p className="mt-2 text-lg font-semibold leading-snug text-[var(--color-tinta)]">{item.chamada}</p>
         )}
@@ -193,6 +194,7 @@ function CardSimples({ item }: { item: Item }) {
         <div className="flex flex-wrap items-center gap-2">
           <h4 className="titulo text-2xl text-[var(--color-preto)]">{item.nome}</h4>
           {item.selo && <Selo texto={item.selo} />}
+          {item.preco && <span className="titulo text-xl text-[var(--color-ketchup)]">{item.preco}</span>}
         </div>
         {item.descricao && <p className="mt-1.5 text-sm leading-relaxed text-[var(--color-cinza)]">{item.descricao}</p>}
       </div>

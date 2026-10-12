@@ -1,0 +1,23 @@
+.grid { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 28px; padding: 28px; border: 2px solid #d41c25; border-radius: 0 26px 26px 26px; }
+.grid::before { content: ""; position: absolute; width: 2px; height: 38px; background: #d41c25; top: -38px; left: -2px; }
+.product { position: relative; min-width: 0; display: flex; flex-direction: column; background: #fff; border-radius: 8px; }
+.product::before { content: ""; position: absolute; width: 28px; height: 2px; left: -28px; top: 38px; background: #d41c25; }
+.photo { position: relative; aspect-ratio: 1.15; background: #e9e9eb; overflow: hidden; border-radius: 6px 6px 0 0; border-bottom: 3px solid #d41c25; }
+.photo img { object-fit: cover; }
+.body { padding: 22px; display: flex; flex: 1; flex-direction: column; }
+.titleRow { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; justify-content: space-between; }
+.titleRow h3 { margin: 0; color: #171717; font-family: var(--redhot-display), sans-serif; font-size: 32px; font-weight: 700; letter-spacing: -.01em; line-height: 1; }
+.titleRow h3::after { content: ""; display: block; width: 34px; height: 3px; margin-top: 12px; background: #d41c25; }
+.titleRow strong { color: #ba141c; font-size: 17px; white-space: nowrap; }
+.body p { color: #505050; font-family: var(--fonte-corpo), sans-serif; font-size: 14px; line-height: 1.7; margin: 16px 0 24px; }
+.body a { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: 13px 16px; border-radius: 4px; background: #c91820; color: white; font-size: 13px; font-weight: 650; text-decoration: none; }
+.body a:hover { background: #a51017; }
+.body a:focus-visible { outline: 3px solid #171717; outline-offset: 4px; }
+@media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 650px) {
+  .grid { grid-template-columns: 1fr; gap: 28px; padding: 0 0 0 14px; border-width: 0 0 0 2px; border-radius: 0; }
+  .product::before { left: -14px; width: 14px; }
+  .photo { aspect-ratio: 1.2; }
+  .body { padding: 20px; }
+  .titleRow h3 { font-size: 32px; }
+}

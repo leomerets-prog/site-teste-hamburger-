@@ -1,0 +1,17 @@
+Crie uma animação de apresentação da marca Bigu’s Burger, com 8 segundos, em formato horizontal 16:9.
+
+Comece em uma tela completamente preta e termine exatamente na logo completa da imagem de referência. O texto laranja “burger” e seu traço final devem ser os últimos elementos a aparecer.
+
+Preserve a grafia BIGU’S, incluindo o apóstrofo, a tipografia alta e condensada, a cor creme, a textura original das letras e o desenho cursivo laranja de “burger”. Preserve as proporções e o posicionamento da marca. Câmera fixa, logo centralizada e espaço livre ao redor.
+
+0–1s: tela totalmente preta, sem elementos visíveis.
+
+1–4s: uma iluminação quente e suave percorre a marca da esquerda para a direita, revelando gradualmente as letras creme de “BIGU’S”. As letras permanecem na posição final, sem se mover ou deformar. O texto “burger” ainda está completamente invisível.
+
+4–6s: revele o “burger” laranja como uma assinatura sendo desenhada, seguindo precisamente os traços cursivos da logo original. Use uma revelação progressiva da arte existente, sem inventar uma nova caligrafia. Não mostrar mão, caneta ou pincel.
+
+6–7s: complete por último o traço laranja que se estende sob a assinatura. Um brilho quente muito discreto acompanha apenas a ponta desse traço e desaparece ao terminar.
+
+7–8s: mantenha a logo completa, imóvel e nítida sobre o fundo preto, exatamente como na imagem final.
+
+Estética de publicidade gastronômica elegante, acolhedora e artesanal. Movimento suave e preciso. Sem fogo, explosões, fumaça intensa, efeitos 3D, zoom ou rotação. Não acrescentar palavras, alimentos, objetos ou marcas-d’água. Não alterar as letras. Sem música, fala ou narração.

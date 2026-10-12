@@ -1,0 +1,7 @@
+Create an 8-second photorealistic burger assembly animation in 16:9. Use the provided exploded burger image as the first frame and the assembled burger image as the last frame.
+
+Lock the camera completely: no zoom, pan, orbit, crop change or reframing. Keep the bottom bun stationary on the dark surface throughout. Preserve the clean dark background and the empty space on the left.
+
+From 0 to 1 second, hold the separated ingredients. From 1 to 6 seconds, assemble the burger in a clear sequence: the tomato slices descend onto the bottom bun, then the lettuce settles on the tomatoes, then the beef patty and its pale melted cheese descend together as one unit, and finally the top bun lowers into place. Each ingredient moves gently downward along the same vertical axis with smooth easing and believable contact. Hold the completed burger still for the final 2 seconds, matching the supplied end frame.
+
+Preserve the ingredient count, bread shape, food textures, scale, lighting and colors of the reference frames. No spinning, bouncing, morphing, duplicated ingredients, exaggerated squashing, melting transitions or flying food. No hands, packaging, added ingredients, smoke, fire, particles, text or logos. No audio. Premium natural food photography with crisp detail and consistent lighting.
